@@ -80,7 +80,7 @@ export function LandingPage() {
           </p>
           <div className="mt-16 grid gap-8 md:grid-cols-3">
             {seekerFeatures.map((feature) => (
-              <Card key={feature.title} className="border-none shadow-sm">
+              <Card key={feature.title} className="border-none shadow-sm bg-cloud/50 hover:bg-cloud hover-scale transition-all">
                 <CardContent className="p-8">
                   <h3 className="text-xl font-bold text-graphite font-heading">{feature.title}</h3>
                   <p className="mt-3 text-slate">{feature.description}</p>
@@ -102,7 +102,7 @@ export function LandingPage() {
           </p>
           <div className="grid gap-8 md:grid-cols-3">
             {recruiterFeatures.map((feature) => (
-              <Card key={feature.title} className="border-none shadow-sm">
+              <Card key={feature.title} className="border-none shadow-sm bg-warm-white/50 hover:bg-warm-white hover-scale transition-all">
                 <CardContent className="p-8">
                   <h3 className="text-xl font-bold text-graphite font-heading">{feature.title}</h3>
                   <p className="mt-3 text-slate">{feature.description}</p>

@@ -61,20 +61,20 @@ export function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#F5F5F5] px-4 py-12">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background px-4 py-12">
       <Card className="w-full max-w-md border-none shadow-lg">
         <CardHeader className="space-y-1 pb-6">
           <button
             onClick={() => navigate('landing')}
-            className="mb-4 flex items-center gap-2 text-sm text-[#6B7280] hover:text-[#1C1C1E]"
+            className="mb-4 flex items-center gap-2 text-sm text-slate hover:text-sienna transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to home
           </button>
-          <CardTitle className="text-2xl font-bold text-[#1C1C1E]">
+          <CardTitle className="text-2xl font-bold text-graphite font-heading">
             {mode === 'login' ? 'Welcome back' : 'Create your account'}
           </CardTitle>
-          <CardDescription className="text-[#6B7280]">
+          <CardDescription className="text-slate font-medium">
             {mode === 'login'
               ? 'Enter your credentials to access your account'
               : 'Get started with HireReady today'}
@@ -82,14 +82,14 @@ export function AuthPage() {
         </CardHeader>
         <CardContent>
           {/* Auth Mode Toggle */}
-          <div className="mb-6 flex rounded-lg bg-[#F3F4F6] p-1">
+          <div className="mb-6 flex rounded-lg bg-cloud p-1">
             <button
               onClick={() => setMode('login')}
               className={cn(
-                "flex-1 rounded-md py-2 text-sm font-medium transition-colors",
+                "flex-1 rounded-md py-2 text-sm font-bold font-heading transition-all",
                 mode === 'login'
-                  ? "bg-white text-[#1C1C1E] shadow-sm"
-                  : "text-[#6B7280] hover:text-[#1C1C1E]"
+                  ? "bg-warm-white text-sienna shadow-sm"
+                  : "text-slate hover:text-graphite"
               )}
             >
               Log In
@@ -97,10 +97,10 @@ export function AuthPage() {
             <button
               onClick={() => setMode('signup')}
               className={cn(
-                "flex-1 rounded-md py-2 text-sm font-medium transition-colors",
+                "flex-1 rounded-md py-2 text-sm font-bold font-heading transition-all",
                 mode === 'signup'
-                  ? "bg-white text-[#1C1C1E] shadow-sm"
-                  : "text-[#6B7280] hover:text-[#1C1C1E]"
+                  ? "bg-warm-white text-sienna shadow-sm"
+                  : "text-slate hover:text-graphite"
               )}
             >
               Sign Up
@@ -118,13 +118,13 @@ export function AuthPage() {
                     className={cn(
                       "flex flex-col items-center gap-3 rounded-lg border-2 p-4 transition-all",
                       selectedRole === 'job-seeker'
-                        ? "border-[#1C1C1E] bg-[#F9FAFB]"
-                        : "border-[#E5E5E5] hover:border-[#9CA3AF]"
+                        ? "border-sienna bg-cloud/50"
+                        : "border-mist hover:border-slate"
                     )}
                   >
                     <span className={cn(
-                      "text-sm font-medium",
-                      selectedRole === 'job-seeker' ? "text-[#1C1C1E]" : "text-[#6B7280]"
+                      "text-sm font-bold font-heading",
+                      selectedRole === 'job-seeker' ? "text-sienna" : "text-slate"
                     )}>
                       Job Seeker
                     </span>
@@ -135,13 +135,13 @@ export function AuthPage() {
                     className={cn(
                       "flex flex-col items-center gap-3 rounded-lg border-2 p-4 transition-all",
                       selectedRole === 'recruiter'
-                        ? "border-[#1C1C1E] bg-[#F9FAFB]"
-                        : "border-[#E5E5E5] hover:border-[#9CA3AF]"
+                        ? "border-sienna bg-cloud/50"
+                        : "border-mist hover:border-slate"
                     )}
                   >
                     <span className={cn(
-                      "text-sm font-medium",
-                      selectedRole === 'recruiter' ? "text-[#1C1C1E]" : "text-[#6B7280]"
+                      "text-sm font-bold font-heading",
+                      selectedRole === 'recruiter' ? "text-sienna" : "text-slate"
                     )}>
                       Recruiter
                     </span>
@@ -153,13 +153,13 @@ export function AuthPage() {
             {/* Name (Signup only) */}
             {mode === 'signup' && (
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-[#1C1C1E]">Full Name</Label>
+                <Label htmlFor="name" className="text-graphite font-medium">Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate" />
                   <Input
                     id="name"
                     placeholder="John Doe"
-                    className="border-[#E5E5E5] bg-white pl-10"
+                    className="border-mist bg-warm-white pl-10"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
@@ -170,13 +170,13 @@ export function AuthPage() {
             {/* Recruiter-specific fields */}
             {mode === 'signup' && selectedRole === 'recruiter' && (
               <div className="space-y-2">
-                <Label htmlFor="company" className="text-[#1C1C1E]">Company Name</Label>
+                <Label htmlFor="company" className="text-graphite font-medium">Company Name</Label>
                 <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+                  <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate" />
                   <Input
                     id="company"
                     placeholder="TechCorp Inc."
-                    className="border-[#E5E5E5] bg-white pl-10"
+                    className="border-mist bg-warm-white pl-10"
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   />
@@ -186,16 +186,16 @@ export function AuthPage() {
 
             {/* Email */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[#1C1C1E]">
+              <Label htmlFor="email" className="text-graphite font-medium">
                 {mode === 'signup' && selectedRole === 'recruiter' ? 'Work Email' : 'Email'}
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate" />
                 <Input
                   id="email"
                   type="email"
                   placeholder={mode === 'signup' && selectedRole === 'recruiter' ? 'you@company.com' : 'you@example.com'}
-                  className="border-[#E5E5E5] bg-white pl-10"
+                  className="border-mist bg-warm-white pl-10"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
@@ -205,14 +205,14 @@ export function AuthPage() {
 
             {/* Password */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[#1C1C1E]">Password</Label>
+              <Label htmlFor="password" className="text-graphite font-medium">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]" />
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate" />
                 <Input
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  className="border-[#E5E5E5] bg-white pl-10"
+                  className="border-mist bg-warm-white pl-10"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
@@ -224,20 +224,20 @@ export function AuthPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#111827] text-white hover:bg-[#1C1C1E]"
+              className="w-full bg-sienna text-warm-white hover:bg-sienna/90 shadow-md transition-all active:scale-[0.98]"
             >
               {isLoading ? 'Processing...' : (mode === 'login' ? 'Log In' : 'Create Account')}
             </Button>
           </form>
 
           {/* Demo Login Buttons */}
-          <div className="mt-6 border-t border-[#E5E5E5] pt-6">
-            <p className="mb-3 text-center text-sm text-[#6B7280]">Quick demo access</p>
+          <div className="mt-6 border-t border-mist pt-6">
+            <p className="mb-3 text-center text-sm text-slate font-medium">Quick demo access</p>
             <div className="grid grid-cols-3 gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="border-[#E5E5E5] text-[#1C1C1E] hover:bg-[#F3F4F6]"
+                className="border-mist text-graphite hover:bg-cloud hover:text-sienna hover:border-sienna transition-all"
                 onClick={() => login('demo-token', 'job-seeker')}
               >
                 Job Seeker
@@ -245,7 +245,7 @@ export function AuthPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-[#E5E5E5] text-[#1C1C1E] hover:bg-[#F3F4F6]"
+                className="border-mist text-graphite hover:bg-cloud hover:text-sienna hover:border-sienna transition-all"
                 onClick={() => login('demo-token', 'recruiter')}
               >
                 Recruiter
@@ -253,7 +253,7 @@ export function AuthPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-[#E5E5E5] text-[#1C1C1E] hover:bg-[#F3F4F6]"
+                className="border-mist text-graphite hover:bg-cloud hover:text-sienna hover:border-sienna transition-all"
                 onClick={() => login('demo-token', 'admin')}
               >
                 Admin
