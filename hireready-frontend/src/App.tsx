@@ -31,6 +31,8 @@ import { AdminPostings } from '@/pages/admin/admin-postings';
 import { AdminApprovals } from '@/pages/admin/admin-approvals';
 import { AdminAnalytics } from '@/pages/admin/admin-analytics';
 
+import { ThemeProvider } from '@/components/theme-provider';
+
 function PageRouter() {
   const { currentPage, isLoggedIn, sidebarCollapsed } = useNavigation();
 
@@ -124,9 +126,11 @@ function PageRouter() {
 
 export default function Home() {
   return (
-    <NavigationProvider>
-      <PageRouter />
-      <Toaster position="bottom-right" theme='dark' />
-    </NavigationProvider>
+    <ThemeProvider defaultTheme="light" storageKey="hireready-theme">
+      <NavigationProvider>
+        <PageRouter />
+        <Toaster position="bottom-right" />
+      </NavigationProvider>
+    </ThemeProvider>
   );
 }

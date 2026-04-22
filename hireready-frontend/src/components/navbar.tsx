@@ -1,6 +1,7 @@
 import { useNavigation } from '@/lib/navigation-context';
 import { Button } from '@/components/ui/button';
 import { LogOut, Menu, User } from 'lucide-react';
+import { ModeToggle } from './mode-toggle';
 
 export function Navbar() {
   const { currentRole, isLoggedIn, navigate, logout, toggleSidebar } = useNavigation();
@@ -27,6 +28,7 @@ export function Navbar() {
       </div>
 
       <div className="flex items-center gap-2">
+        <ModeToggle />
         {!isLoggedIn ? (
           <>
             <Button
