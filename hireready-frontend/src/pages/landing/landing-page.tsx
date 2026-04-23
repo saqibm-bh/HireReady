@@ -61,8 +61,8 @@ export function LandingPage() {
         <div 
           className="absolute bottom-0 left-0 right-0 pointer-events-none select-none"
           style={{ 
-            maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
-            WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+            maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)'
           }}
         >
           <img
