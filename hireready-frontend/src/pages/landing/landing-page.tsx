@@ -100,7 +100,7 @@ export function LandingPage() {
           </p>
           <div className="mt-16 grid gap-8 md:grid-cols-3">
             {seekerFeatures.map((feature) => (
-              <Card key={feature.title} className="border-border/50 shadow-sm bg-card/50 hover:bg-card hover-scale transition-all">
+              <Card key={feature.title} className="glass-panel">
                 <CardContent className="p-8">
                   <h3 className="text-xl font-bold text-card-foreground font-heading">{feature.title}</h3>
                   <p className="mt-3 text-muted-foreground">{feature.description}</p>
@@ -122,7 +122,7 @@ export function LandingPage() {
           </p>
           <div className="grid gap-8 md:grid-cols-3">
             {recruiterFeatures.map((feature) => (
-              <Card key={feature.title} className="border-border/50 shadow-sm bg-background/50 hover:bg-background hover-scale transition-all">
+              <Card key={feature.title} className="glass-panel">
                 <CardContent className="p-8">
                   <h3 className="text-xl font-bold text-card-foreground font-heading">{feature.title}</h3>
                   <p className="mt-3 text-muted-foreground">{feature.description}</p>

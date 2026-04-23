@@ -222,4 +222,19 @@
   .animate-ticker {
     animation: ticker-up 0.5s cubic-bezier(0, 0, 0.2, 1) forwards;
   }
+
+  .glass-panel {
+    @apply relative overflow-hidden bg-white/[0.03] backdrop-blur-xl border border-white/10 shadow-2xl transition-all duration-500;
+  }
+
+  .glass-panel:hover {
+    @apply bg-white/[0.06] border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.12)];
+    transform: translateY(-4px);
+  }
+
+  /* Inner light reflection */
+  .glass-panel::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none;
+  }
 }
