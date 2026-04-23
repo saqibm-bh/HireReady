@@ -58,13 +58,7 @@ export function LandingPage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-navbar px-4 pt-20 pb-56 md:px-6 md:pt-32 md:pb-80">
         {/* Bridge Illustration */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 pointer-events-none select-none"
-          style={{ 
-            maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
-            WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)'
-          }}
-        >
+        <div className="absolute bottom-0 left-0 right-0 opacity-30 pointer-events-none select-none">
           <img
             src={theme === 'dark' ? '/assets/images/hero_bridge_dark.png' : '/assets/images/hero_bridge_light.png'}
             alt="Bridge illustration"
@@ -98,7 +92,7 @@ export function LandingPage() {
             <Button
               size="lg"
               variant="outline"
-              className="w-full border-mist bg-transparent text-mist hover:bg-mist/10 sm:w-auto"
+              className={`w-full border-mist bg-transparent sm:w-auto ${theme === 'dark' ? 'border-mist text-mist hover:bg-mist/10' : 'border-graphite text-warm-white hover:bg-graphite/5'}`}
               onClick={() => navigate('auth', { mode: 'signup', role: 'recruiter' })}
             >
               Post a Job as Recruiter
