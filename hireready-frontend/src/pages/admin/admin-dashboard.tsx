@@ -39,7 +39,7 @@ export function AdminDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Pending Recruiter Approvals */}
-        <Card className="border-border/50 shadow-sm bg-card">
+        <Card className="glass-panel">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-lg font-semibold text-foreground">
               Pending Recruiter Approvals
@@ -89,7 +89,7 @@ export function AdminDashboard() {
         </Card>
 
         {/* Recent Activity */}
-        <Card className="border-border/50 shadow-sm bg-card">
+        <Card className="glass-panel">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
               <Activity className="h-5 w-5 text-muted-foreground" />

@@ -9,7 +9,7 @@ interface StatsCardProps {
 
 export function StatsCard({ title, value, subtitle }: StatsCardProps) {
   return (
-    <Card className="border-border/50 shadow-sm bg-card transition-all hover:bg-card/80">
+    <Card className="glass-panel">
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div>

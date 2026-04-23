@@ -46,7 +46,7 @@ export function RecruiterDashboard() {
       </div>
 
       {/* Recent Job Postings */}
-      <Card className="border-border/50 shadow-sm bg-card">
+      <Card className="glass-panel">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-semibold text-foreground">
             Recent Job Postings
@@ -118,7 +118,7 @@ export function RecruiterDashboard() {
       </Card>
 
       {/* Top Applicants */}
-      <Card className="border-border/50 shadow-sm bg-card">
+      <Card className="glass-panel">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-semibold text-foreground">
             Top Applicants

@@ -12,7 +12,7 @@ export function SeekerDashboard() {
   return (
     <div className="space-y-6 animate-liquid">
       {/* Welcome Banner */}
-      <Card className="border-border/50 bg-navbar text-navbar-foreground shadow-sm">
+      <Card className="glass-panel">
         <CardContent className="p-6">
           <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
             <div>
@@ -33,7 +33,7 @@ export function SeekerDashboard() {
       </Card>
 
       {/* Skill Gap Summary */}
-      <Card className="border-border/50 shadow-sm bg-card">
+      <Card className="glass-panel">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-bold text-foreground font-heading">Your Skill Gap Summary</CardTitle>
         </CardHeader>
@@ -74,7 +74,7 @@ export function SeekerDashboard() {
       </Card>
 
       {/* Top Missing Skills */}
-      <Card className="border-border/50 shadow-sm bg-card">
+      <Card className="glass-panel">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-bold text-foreground font-heading">Top Missing Skills</CardTitle>
         </CardHeader>
@@ -103,7 +103,7 @@ export function SeekerDashboard() {
       </Card>
 
       {/* Recommended Learning */}
-      <Card className="border-border/50 shadow-sm bg-card">
+      <Card className="glass-panel">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-bold text-foreground font-heading">Recommended Learning</CardTitle>
           <Button
@@ -147,7 +147,7 @@ export function SeekerDashboard() {
       </Card>
 
       {/* Recent Applications */}
-      <Card className="border-border/50 shadow-sm bg-card">
+      <Card className="glass-panel">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-bold text-foreground font-heading">Recent Applications</CardTitle>
           <Button
