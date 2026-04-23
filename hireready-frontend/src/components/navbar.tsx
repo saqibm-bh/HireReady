@@ -21,9 +21,10 @@ export function Navbar() {
         )}
         <button
           onClick={() => navigate(isLoggedIn ? (currentRole === 'job-seeker' ? 'seeker-dashboard' : currentRole === 'recruiter' ? 'recruiter-dashboard' : 'admin-dashboard') : 'landing')}
-          className="flex items-center gap-2"
+          className="flex items-center gap-3 transition-transform hover:scale-105"
         >
-          <span className="text-lg font-bold tracking-tight text-navbar-foreground font-heading">HireReady</span>
+          <img src="/assets/images/logo.png" alt="HireReady Logo" className="h-10 w-10" />
+          <span className="text-xl font-bold tracking-tight text-navbar-foreground font-heading">HireReady</span>
         </button>
       </div>
 
