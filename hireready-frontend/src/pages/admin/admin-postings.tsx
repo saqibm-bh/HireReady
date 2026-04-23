@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 export function AdminPostings() {
   return (
-    <div className="space-y-6 liquid-stagger">
+    <div className="space-y-6 animate-liquid">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Job Postings</h1>
         <p className="mt-1 text-muted-foreground">

@@ -40,7 +40,6 @@ export const currentRecruiter: Recruiter = {
   status: 'active',
   companyName: 'TechCorp Inc.',
   workEmail: 'sarah@techcorp.com',
-  approvalStatus: 'approved',
 };
 
 export const currentAdmin: Admin = {
@@ -335,7 +334,6 @@ export const pendingRecruiters: Recruiter[] = [
     status: 'active',
     companyName: 'StartupX',
     workEmail: 'jennifer@startupx.io',
-    approvalStatus: 'pending',
   },
   {
     id: 'rec-pending-002',
@@ -346,7 +344,6 @@ export const pendingRecruiters: Recruiter[] = [
     status: 'active',
     companyName: 'Innovate Co.',
     workEmail: 'robert@innovate.co',
-    approvalStatus: 'pending',
   },
   {
     id: 'rec-pending-003',
@@ -357,7 +354,6 @@ export const pendingRecruiters: Recruiter[] = [
     status: 'active',
     companyName: 'GlobalTech',
     workEmail: 'lisa@globaltech.com',
-    approvalStatus: 'pending',
   },
 ];
 

@@ -160,13 +160,13 @@
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --animation-liquid: liquid-entrance 1.0s ease-out forwards;
+  --animation-liquid: liquid-entrance 0.8s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 @keyframes liquid-entrance {
   0% {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(8px);
   }
 
   100% {
@@ -178,6 +178,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    transition: background-color 0.25s ease-in-out, border-color 0.25s ease-in-out, color 0.2s ease-in-out;
   }
 
   body {
@@ -205,42 +206,5 @@
 
   .animate-liquid {
     animation: var(--animation-liquid);
-  }
-
-  .liquid-stagger>* {
-    opacity: 0;
-    animation: var(--animation-liquid);
-  }
-
-  .liquid-stagger>*:nth-child(1) {
-    animation-delay: 0.05s;
-  }
-
-  .liquid-stagger>*:nth-child(2) {
-    animation-delay: 0.1s;
-  }
-
-  .liquid-stagger>*:nth-child(3) {
-    animation-delay: 0.15s;
-  }
-
-  .liquid-stagger>*:nth-child(4) {
-    animation-delay: 0.2s;
-  }
-
-  .liquid-stagger>*:nth-child(5) {
-    animation-delay: 0.25s;
-  }
-
-  .liquid-stagger>*:nth-child(6) {
-    animation-delay: 0.3s;
-  }
-
-  .liquid-stagger>*:nth-child(7) {
-    animation-delay: 0.35s;
-  }
-
-  .liquid-stagger>*:nth-child(8) {
-    animation-delay: 0.4s;
   }
 }

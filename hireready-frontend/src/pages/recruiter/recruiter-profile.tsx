@@ -4,7 +4,7 @@ import { Building2, Mail, Calendar, Briefcase, Users, TrendingUp } from 'lucide-
 
 export function RecruiterProfile() {
   return (
-    <div className="space-y-6 liquid-stagger">
+    <div className="space-y-6 animate-liquid">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Profile</h1>
         <p className="mt-1 text-muted-foreground">
@@ -38,9 +38,6 @@ export function RecruiterProfile() {
                   <span className="text-sm">Member since {currentRecruiter.joinDate}</span>
                 </div>
               </div>
-            </div>
-            <div className="rounded-full bg-sienna/20 text-sienna border border-sienna/30 px-4 py-2 text-sm font-medium">
-              {currentRecruiter.approvalStatus}
             </div>
           </div>
         </CardContent>

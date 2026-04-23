@@ -10,7 +10,7 @@ export function RecruiterPostings() {
   const { navigate } = useNavigation();
 
   return (
-    <div className="space-y-6 liquid-stagger">
+    <div className="space-y-6 animate-liquid">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-bold text-foreground">My Job Postings</h1>
