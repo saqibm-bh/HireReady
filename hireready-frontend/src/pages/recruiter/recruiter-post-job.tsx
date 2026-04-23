@@ -60,7 +60,7 @@ export function RecruiterPostJob() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 liquid-stagger">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Post a Job</h1>
         <p className="mt-1 text-muted-foreground">

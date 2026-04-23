@@ -39,10 +39,10 @@ export function LandingPage() {
   const { navigate } = useNavigation();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background liquid-stagger">
       {/* Hero Section */}
       <section className="bg-navbar px-4 py-20 md:px-6 md:py-32">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-4xl text-center liquid-stagger">
           <h1 className="text-balance text-4xl font-bold tracking-tight text-cloud md:text-5xl lg:text-6xl">
             Know exactly what&apos;s standing between you and your dream job
           </h1>

@@ -4,7 +4,7 @@ import { Building2, Mail, Calendar, Briefcase, Users, TrendingUp } from 'lucide-
 
 export function RecruiterProfile() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 liquid-stagger">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Profile</h1>
         <p className="mt-1 text-muted-foreground">

@@ -14,7 +14,7 @@ export function AdminUsers() {
     : allUsers.filter((user) => user.role === roleFilter);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 liquid-stagger">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Users Management</h1>
         <p className="mt-1 text-muted-foreground">

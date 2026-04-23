@@ -24,7 +24,7 @@ export function SeekerRoadmap() {
   const progress = Math.round((completedSkills.length / learningRoadmap.length) * 100);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 liquid-stagger">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Learning Roadmap</h1>
         <p className="mt-1 text-muted-foreground">

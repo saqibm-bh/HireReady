@@ -61,7 +61,7 @@ export function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background px-4 py-12">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background px-4 py-12 liquid-stagger">
       <Card className="w-full max-w-md border-border/50 shadow-lg bg-card">
         <CardHeader className="space-y-1 pb-6">
           <button

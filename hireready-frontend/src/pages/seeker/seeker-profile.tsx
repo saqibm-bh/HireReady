@@ -8,7 +8,7 @@ export function SeekerProfile() {
   const initials = currentJobSeeker.name.split(' ').map(n => n[0]).join('');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 liquid-stagger">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Profile</h1>
         <p className="mt-1 text-muted-foreground">

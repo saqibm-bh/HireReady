@@ -10,7 +10,7 @@ export function SeekerDashboard() {
   const { navigate } = useNavigation();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 liquid-stagger">
       {/* Welcome Banner */}
       <Card className="border-border/50 bg-navbar text-navbar-foreground shadow-sm">
         <CardContent className="p-6">
