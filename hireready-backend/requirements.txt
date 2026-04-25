@@ -8,3 +8,7 @@ psycopg2-binary
 python-jose[cryptography]
 passlib
 bcrypt==3.2.0
+langchain
+langchain-groq
+pymupdf
+python-multipart
