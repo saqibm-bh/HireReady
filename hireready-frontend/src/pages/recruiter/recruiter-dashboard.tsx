@@ -7,7 +7,8 @@ import { Briefcase, Users, TrendingUp, Clock, ArrowRight, Eye } from 'lucide-rea
 import { cn } from '@/lib/utils';
 
 export function RecruiterDashboard() {
-  const { navigate } = useNavigation();
+  const { navigate, userData } = useNavigation();
+  const userName = userData?.name || currentRecruiter.name;
 
   const topApplicants = jobApplicants
     .sort((a, b) => b.matchScore - a.matchScore)
@@ -18,7 +19,7 @@ export function RecruiterDashboard() {
       {/* Welcome Section */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">
-          Welcome back, {currentRecruiter.name.split(' ')[0]}
+          Welcome back, {userName.split(' ')[0]}
         </h1>
         <p className="mt-1 text-muted-foreground">
           Here&apos;s an overview of your recruitment activity at {currentRecruiter.companyName}

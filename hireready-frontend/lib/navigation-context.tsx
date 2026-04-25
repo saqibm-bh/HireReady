@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { UserRole } from './types';
+import type { UserResponse } from './types/auth';
+import { authService } from '@/services/auth-service';
 
 type Page =
   | 'landing'
@@ -28,6 +30,7 @@ interface NavigationContextType {
   currentPage: Page;
   currentRole: UserRole | null;
   isLoggedIn: boolean;
+  userData: UserResponse | null;
   sidebarCollapsed: boolean;
   pageParams: any;
   navigate: (page: Page, params?: any) => void;
@@ -42,6 +45,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   const [currentPage, setCurrentPage] = useState<Page>('landing');
   const [currentRole, setCurrentRole] = useState<UserRole | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState<UserResponse | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [pageParams, setPageParams] = useState<any>({});
 
@@ -65,6 +69,14 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       if (decoded && decoded.role) {
         setIsLoggedIn(true);
         setCurrentRole(decoded.role as UserRole);
+        // Fetch full user data
+        authService.getCurrentUser()
+          .then(setUserData)
+          .catch(() => {
+            localStorage.removeItem('auth_token');
+            setIsLoggedIn(false);
+            setCurrentRole(null);
+          });
       } else {
         localStorage.removeItem('auth_token');
       }
@@ -89,6 +101,20 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     if (role) {
       setCurrentRole(role);
       setIsLoggedIn(true);
+      
+      // Fetch user data if it's not a demo login
+      if (token !== 'demo-token') {
+        authService.getCurrentUser().then(setUserData);
+      } else {
+        // Set mock user data for demo
+        setUserData({
+          id: 'demo',
+          email: 'demo@example.com',
+          name: 'Demo User',
+          role: role
+        });
+      }
+
       if (role === 'job-seeker') {
         setCurrentPage('seeker-dashboard');
       } else if (role === 'recruiter') {
@@ -102,6 +128,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem('auth_token');
     setCurrentRole(null);
+    setUserData(null);
     setIsLoggedIn(false);
     setCurrentPage('landing');
   };
@@ -116,6 +143,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
         currentPage,
         currentRole,
         isLoggedIn,
+        userData,
         sidebarCollapsed,
         pageParams,
         navigate,

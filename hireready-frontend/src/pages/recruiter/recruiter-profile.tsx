@@ -1,8 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { currentRecruiter, recruiterJobPostings, recruiterStats } from '@/lib/mock-data';
+import { useNavigation } from '@/lib/navigation-context';
 import { Building2, Mail, Calendar, Briefcase, Users, TrendingUp } from 'lucide-react';
 
 export function RecruiterProfile() {
+  const { userData } = useNavigation();
+  const userName = userData?.name || currentRecruiter.name;
+  const userEmail = userData?.email || currentRecruiter.workEmail;
   return (
     <div className="space-y-6 animate-liquid">
       <div>
@@ -27,11 +31,11 @@ export function RecruiterProfile() {
               <div className="mt-3 space-y-2">
                 <div className="flex items-center justify-center gap-2 text-muted-foreground md:justify-start">
                   <span className="text-sm font-medium text-foreground">Recruiter:</span>
-                  <span className="text-sm">{currentRecruiter.name}</span>
+                  <span className="text-sm">{userName}</span>
                 </div>
                 <div className="flex items-center justify-center gap-2 text-muted-foreground md:justify-start">
                   <Mail className="h-4 w-4 text-sienna" />
-                  <span className="text-sm">{currentRecruiter.workEmail}</span>
+                  <span className="text-sm">{userEmail}</span>
                 </div>
                 <div className="flex items-center justify-center gap-2 text-muted-foreground md:justify-start">
                   <Calendar className="h-4 w-4 text-sienna" />

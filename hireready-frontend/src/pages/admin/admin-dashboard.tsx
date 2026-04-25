@@ -6,12 +6,13 @@ import { platformStats, pendingRecruiters, recentActivity } from '@/lib/mock-dat
 import { Users, UserCheck, Clock, Briefcase, ArrowRight, Check, X, Activity } from 'lucide-react';
 
 export function AdminDashboard() {
-  const { navigate } = useNavigation();
+  const { navigate, userData } = useNavigation();
+  const userName = userData?.name || 'Admin';
 
   return (
     <div className="space-y-6 animate-liquid">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold text-foreground">Welcome back, {userName.split(' ')[0]}</h1>
         <p className="mt-1 text-muted-foreground">
           Platform overview and management
         </p>

@@ -4,7 +4,7 @@ import { LogOut, Menu, User } from 'lucide-react';
 import { ModeToggle } from './mode-toggle';
 
 export function Navbar() {
-  const { currentRole, isLoggedIn, navigate, logout, toggleSidebar } = useNavigation();
+  const { currentRole, isLoggedIn, userData, navigate, logout, toggleSidebar } = useNavigation();
 
   return (
     <nav className="sticky top-0 z-50 flex h-16 items-center justify-between bg-navbar px-4 md:px-6">
@@ -53,7 +53,7 @@ export function Navbar() {
                 <User className="h-4 w-4 text-navbar-foreground" />
               </div>
               <span className="text-sm text-navbar-foreground">
-                {currentRole === 'job-seeker' ? 'Job Seeker' : currentRole === 'recruiter' ? 'Recruiter' : 'Admin'}
+                {userData?.name || (currentRole === 'job-seeker' ? 'Job Seeker' : currentRole === 'recruiter' ? 'Recruiter' : 'Admin')}
               </span>
             </div>
             <Button

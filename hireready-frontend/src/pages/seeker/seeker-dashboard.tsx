@@ -7,7 +7,8 @@ import { currentJobSeeker, gapAnalysis, topMissingSkills, learningResources, job
 import { ArrowRight, BookOpen, Clock, ExternalLink } from 'lucide-react';
 
 export function SeekerDashboard() {
-  const { navigate } = useNavigation();
+  const { navigate, userData } = useNavigation();
+  const userName = userData?.name || currentJobSeeker.name;
 
   return (
     <div className="space-y-6 animate-liquid">
@@ -16,7 +17,7 @@ export function SeekerDashboard() {
         <CardContent className="p-6">
           <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
             <div>
-              <h1 className="text-2xl font-bold font-heading">Welcome back, {currentJobSeeker.name.split(' ')[0]}</h1>
+               <h1 className="text-2xl font-bold font-heading">Welcome back, {userName.split(' ')[0]}</h1>
               <p className="mt-1 text-navbar-foreground/70">
                 Here&apos;s your progress towards becoming a <span className="text-sienna font-semibold">{currentJobSeeker.targetRole}</span>
               </p>

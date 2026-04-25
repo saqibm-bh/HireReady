@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SkillBadge } from '@/components/skill-badge';
 import { currentJobSeeker, matchScoreHistory } from '@/lib/mock-data';
+import { useNavigation } from '@/lib/navigation-context';
 import { User, MapPin, Target, FileText, Calendar } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 export function SeekerProfile() {
-  const initials = currentJobSeeker.name.split(' ').map(n => n[0]).join('');
+  const { userData } = useNavigation();
+  const userName = userData?.name || currentJobSeeker.name;
+  const initials = userName.split(' ').map(n => n[0]).join('');
 
   return (
     <div className="space-y-6 animate-liquid">
@@ -25,7 +28,7 @@ export function SeekerProfile() {
             </div>
             <div className="flex-1 text-center md:text-left">
               <h2 className="text-2xl font-bold text-foreground font-heading">
-                {currentJobSeeker.name}
+                {userName}
               </h2>
               <div className="mt-2 flex flex-col items-center gap-2 md:flex-row md:items-start">
                 <div className="flex items-center gap-1 text-muted-foreground">
