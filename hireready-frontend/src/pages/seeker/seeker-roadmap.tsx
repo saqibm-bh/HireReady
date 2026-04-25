@@ -33,18 +33,18 @@ export function SeekerRoadmap() {
       </div>
 
       {/* Progress Tracker */}
-      <Card className="border-border/50 bg-navbar text-navbar-foreground shadow-sm">
+      <Card className="border-border/50 bg-card shadow-sm">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold">Your Progress</h3>
-              <p className="mt-1 text-navbar-foreground/70">
+              <p className="mt-1 text-muted-foreground">
                 {completedSkills.length} of {learningRoadmap.length} skills completed
               </p>
             </div>
             <div className="text-right">
               <p className="text-3xl font-bold text-sienna">{progress}%</p>
-              <p className="text-sm text-navbar-foreground/60">Complete</p>
+              <p className="text-sm text-muted-foreground">Complete</p>
             </div>
           </div>
           <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-muted/20">

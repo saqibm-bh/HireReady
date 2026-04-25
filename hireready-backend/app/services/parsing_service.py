@@ -42,7 +42,7 @@ def extract_text_from_pdf(file_bytes: bytes) -> str:
             text += page.get_text()
     return text
 
-async def parse_resume(file_bytes: bytes) -> ResumeParseResponse:
+async def parse_resume(file_bytes: bytes) -> tuple[str, ResumeParseResponse]:
     """Standalone function to orchestrate the extraction and parsing of a resume."""
     resume_text = extract_text_from_pdf(file_bytes)
     
@@ -52,4 +52,4 @@ async def parse_resume(file_bytes: bytes) -> ResumeParseResponse:
         "resume_text": resume_text
     })
     
-    return response
+    return resume_text, response

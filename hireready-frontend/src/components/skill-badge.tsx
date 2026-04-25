@@ -13,8 +13,8 @@ export function SkillBadge({ skill, variant = 'filled', size = 'md' }: SkillBadg
         "inline-flex items-center rounded-full font-medium",
         size === 'sm' ? "px-2 py-0.5 text-xs" : "px-3 py-1 text-sm",
         variant === 'filled'
-          ? "bg-[#2D2D2D] text-white"
-          : "border border-[#6B7280] text-[#6B7280]"
+          ? "bg-graphite text-warm-white dark:bg-sienna"
+          : "border border-slate text-slate dark:border-sienna dark:text-sienna"
       )}
     >
       {skill}

@@ -18,13 +18,13 @@ export function SeekerDashboard() {
           <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
             <div>
                <h1 className="text-2xl font-bold font-heading">Welcome back, {userName.split(' ')[0]}</h1>
-              <p className="mt-1 text-navbar-foreground/70">
+              <p className="mt-1 text-muted-foreground">
                 Here&apos;s your progress towards becoming a <span className="text-sienna font-semibold">{currentJobSeeker.targetRole}</span>
               </p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm text-navbar-foreground/60">Overall Match</p>
+                <p className="text-sm text-muted-foreground">Overall Match</p>
                 <p className="text-2xl font-bold font-heading text-sienna">{currentJobSeeker.matchScore}%</p>
               </div>
               <MatchScoreRing score={currentJobSeeker.matchScore} size="md" />

@@ -2,13 +2,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SkillBadge } from '@/components/skill-badge';
 import { currentJobSeeker, matchScoreHistory } from '@/lib/mock-data';
 import { useNavigation } from '@/lib/navigation-context';
-import { User, MapPin, Target, FileText, Calendar } from 'lucide-react';
+import { useResume } from '@/hooks/use-resume';
+import { MapPin, Target, FileText, Calendar, Loader2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 export function SeekerProfile() {
   const { userData } = useNavigation();
-  const userName = userData?.name || currentJobSeeker.name;
-  const initials = userName.split(' ').map(n => n[0]).join('');
+  const { skills, history, isLoading } = useResume();
+  const userName = userData?.name || 'User';
+  const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-sienna" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-liquid">
@@ -51,14 +61,14 @@ export function SeekerProfile() {
                 <div className="h-10 w-px bg-border" />
                 <div className="text-center">
                   <p className="text-2xl font-bold text-foreground">
-                    {currentJobSeeker.currentSkills.length}
+                    {skills.length}
                   </p>
                   <p className="text-xs text-muted-foreground">Skills</p>
                 </div>
                 <div className="h-10 w-px bg-border" />
                 <div className="text-center">
                   <p className="text-2xl font-bold text-foreground">
-                    {currentJobSeeker.resumeHistory.length}
+                    {history.length}
                   </p>
                   <p className="text-xs text-muted-foreground">Resumes</p>
                 </div>
@@ -77,11 +87,15 @@ export function SeekerProfile() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {currentJobSeeker.currentSkills.map((skill) => (
-                <SkillBadge key={skill} skill={skill} variant="filled" />
-              ))}
-            </div>
+            {skills.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill) => (
+                  <SkillBadge key={skill} skill={skill} variant="filled" />
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No skills extracted yet.</p>
+            )}
           </CardContent>
         </Card>
 
@@ -141,30 +155,34 @@ export function SeekerProfile() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {currentJobSeeker.resumeHistory.map((resume, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-4 rounded-lg border border-border bg-background p-4 hover:bg-muted/10 transition-colors"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/50">
-                  <FileText className="h-5 w-5 text-sienna" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">{resume.filename}</p>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
-                    <span>{resume.date}</span>
+          {history.length > 0 ? (
+            <div className="space-y-3">
+              {history.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-4 rounded-lg border border-border bg-background p-4 hover:bg-muted/10 transition-colors"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/50">
+                    <FileText className="h-5 w-5 text-sienna" />
                   </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground">{item.filename || 'Unnamed Resume'}</p>
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Calendar className="h-3 w-3" />
+                      <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  {index === 0 && (
+                    <span className="rounded-full bg-sienna/10 text-sienna border border-sienna/20 px-2 py-0.5 text-xs font-medium">
+                      Current
+                    </span>
+                  )}
                 </div>
-                {index === 0 && (
-                  <span className="rounded-full bg-sienna/10 text-sienna border border-sienna/20 px-2 py-0.5 text-xs font-medium">
-                    Current
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground py-4 text-center">No resume history found.</p>
+          )}
         </CardContent>
       </Card>
     </div>

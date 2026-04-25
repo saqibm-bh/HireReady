@@ -3,16 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SkillBadge } from '@/components/skill-badge';
-import { currentJobSeeker, suggestedRoles } from '@/lib/mock-data';
-import { Upload, FileText, X, Search, CheckCircle } from 'lucide-react';
+import { useResume } from '@/hooks/use-resume';
+import { Upload, FileText, X, Search, Info, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export function SeekerResume() {
+  const { history, skills, isLoading, isUploading, uploadResume } = useResume();
   const [dragActive, setDragActive] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [targetRole, setTargetRole] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [analyzed, setAnalyzed] = useState(false);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -29,25 +29,39 @@ export function SeekerResume() {
     e.stopPropagation();
     setDragActive(false);
     const files = e.dataTransfer.files;
-    if (files?.[0]) {
-      setUploadedFile(files[0].name);
+    if (files?.[0] && files[0].type === 'application/pdf') {
+      setSelectedFile(files[0]);
+    } else {
+      toast.error('Please upload a PDF file');
     }
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files?.[0]) {
-      setUploadedFile(files[0].name);
+    if (files?.[0] && files[0].type === 'application/pdf') {
+      setSelectedFile(files[0]);
+    } else {
+      toast.error('Please upload a PDF file');
     }
   };
 
-  const filteredSuggestions = suggestedRoles.filter((role) =>
-    role.toLowerCase().includes(targetRole.toLowerCase())
-  );
-
-  const handleAnalyze = () => {
-    setAnalyzed(true);
+  const handleAnalyze = async () => {
+    if (!selectedFile) return;
+    try {
+      await uploadResume(selectedFile);
+      setSelectedFile(null);
+    } catch (error) {
+      // Error is handled in the hook's toast
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-sienna" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-liquid">
@@ -67,7 +81,6 @@ export function SeekerResume() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Drag and Drop Area */}
             <div
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -80,18 +93,19 @@ export function SeekerResume() {
                   : "border-border hover:border-muted-foreground"
               )}
             >
-              {uploadedFile ? (
+              {selectedFile ? (
                 <div className="flex items-center justify-center gap-3">
                   <FileText className="h-8 w-8 text-muted-foreground" />
                   <div className="text-left">
-                    <p className="font-medium text-foreground">{uploadedFile}</p>
+                    <p className="font-medium text-foreground">{selectedFile.name}</p>
                     <p className="text-sm text-muted-foreground">Ready to analyze</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="ml-2 cursor-pointer"
-                    onClick={() => setUploadedFile(null)}
+                    onClick={() => setSelectedFile(null)}
+                    disabled={isUploading}
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -103,11 +117,11 @@ export function SeekerResume() {
                     Drag and drop your resume here
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    or click to browse (PDF, DOC, DOCX)
+                    or click to browse (PDF only)
                   </p>
                   <input
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf"
                     onChange={handleFileInput}
                     className="absolute inset-0 cursor-pointer opacity-0"
                   />
@@ -115,46 +129,34 @@ export function SeekerResume() {
               )}
             </div>
 
-            {/* Target Role Input */}
             <div className="relative">
               <label className="mb-2 block text-sm font-medium text-foreground">
-                Target Role
+                Target Role (Optional)
               </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   value={targetRole}
                   onChange={(e) => setTargetRole(e.target.value)}
-                  onFocus={() => setShowSuggestions(true)}
-                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                   placeholder="e.g., Senior Frontend Developer"
                   className="border-border bg-background pl-10"
                 />
               </div>
-              {showSuggestions && targetRole && filteredSuggestions.length > 0 && (
-                <div className="absolute z-10 mt-1 w-full rounded-lg border border-border bg-card shadow-lg overflow-hidden">
-                  {filteredSuggestions.map((role) => (
-                    <button
-                      key={role}
-                      className="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors cursor-pointer"
-                      onClick={() => {
-                        setTargetRole(role);
-                        setShowSuggestions(false);
-                      }}
-                    >
-                      {role}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
 
             <Button
               className="w-full bg-sienna text-warm-white hover:bg-sienna/90 cursor-pointer disabled:opacity-50"
-              disabled={!uploadedFile || !targetRole}
+              disabled={!selectedFile || isUploading}
               onClick={handleAnalyze}
             >
-              Analyze Resume
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                'Analyze Resume'
+              )}
             </Button>
           </CardContent>
         </Card>
@@ -163,44 +165,30 @@ export function SeekerResume() {
         <Card className="border-border/50 shadow-sm bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-semibold text-foreground">
-              {analyzed ? 'Extracted Skills' : 'Your Current Skills'}
+              Your Current Skills
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {analyzed ? (
+            {skills.length > 0 ? (
               <div className="space-y-4">
-                <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
-                  <CheckCircle className="h-5 w-5 text-sienna" />
-                  <span className="text-sm text-foreground">
-                    Analysis complete! Found {currentJobSeeker.currentSkills.length} skills
-                  </span>
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  Unique skills extracted from your resume history:
+                </p>
                 <div className="flex flex-wrap gap-2">
-                  {currentJobSeeker.currentSkills.map((skill) => (
+                  {skills.map((skill) => (
                     <SkillBadge key={skill} skill={skill} variant="filled" />
                   ))}
-                </div>
-                <div className="pt-4">
-                  <h4 className="mb-2 text-sm font-medium text-foreground">
-                    Additional skills detected:
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    <SkillBadge skill="Problem Solving" variant="outlined" />
-                    <SkillBadge skill="Team Collaboration" variant="outlined" />
-                    <SkillBadge skill="Agile/Scrum" variant="outlined" />
-                  </div>
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  These are the skills from your most recent resume:
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {currentJobSeeker.currentSkills.map((skill) => (
-                    <SkillBadge key={skill} skill={skill} variant="filled" />
-                  ))}
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <div className="rounded-full bg-muted p-3">
+                  <Info className="h-6 w-6 text-muted-foreground" />
                 </div>
+                <p className="mt-4 text-sm font-medium text-foreground">No skills extracted yet</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Upload your first resume to see your skill profile here.
+                </p>
               </div>
             )}
           </CardContent>
@@ -215,25 +203,45 @@ export function SeekerResume() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {currentJobSeeker.resumeHistory.map((resume, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between rounded-lg border border-border bg-background p-4 hover:bg-muted/5 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium text-foreground">{resume.filename}</p>
-                    <p className="text-sm text-muted-foreground">{resume.date}</p>
+          {history.length > 0 ? (
+            <div className="space-y-3">
+              {history.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between rounded-lg border border-border bg-background p-4 hover:bg-muted/5 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-sienna/10 p-2">
+                      <FileText className="h-5 w-5 text-sienna" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">{item.filename || 'Unnamed Resume'}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(item.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-md">
+                      {item.skills.length} skills
+                    </span>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="border-border text-foreground hover:bg-muted cursor-pointer">
-                  Download
-                </Button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-border rounded-lg">
+              <Upload className="h-10 w-10 text-muted-foreground mb-4 opacity-20" />
+              <p className="text-sm font-medium text-foreground">No resume history found</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Your uploaded resumes will appear here.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
