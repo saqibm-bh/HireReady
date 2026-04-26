@@ -39,8 +39,7 @@ def perform_gap_analysis(user_skills: List[str], target_role: str) -> Tuple[int,
     if total_top_20_weight == 0:
         return 0, [], []
 
-    # Get the max frequency to calculate relative importance (0-100%) for UI bars
-    max_freq = top_20_skills[0][1] if top_20_skills else 1
+
 
     # Normalize user skills (lowercase, strip whitespace) for matching
     normalized_user_skills = {skill.lower().strip() for skill in user_skills}
@@ -48,6 +47,7 @@ def perform_gap_analysis(user_skills: List[str], target_role: str) -> Tuple[int,
     skills_you_have = []
     skills_missing = []
     user_weight_score = 0
+    missing_skill_data = []
 
     for skill_name, freq in top_20_skills:
         normalized_skill = skill_name.lower().strip()
@@ -55,8 +55,22 @@ def perform_gap_analysis(user_skills: List[str], target_role: str) -> Tuple[int,
             skills_you_have.append(skill_name)
             user_weight_score += freq
         else:
-            relative_importance = int((freq / max_freq) * 100)
+            missing_skill_data.append((skill_name, freq))
+
+    # Calculate relative importance so they add up to exactly 100
+    total_missing_freq = sum(freq for _, freq in missing_skill_data)
+    
+    if total_missing_freq > 0:
+        for skill_name, freq in missing_skill_data:
+            # Calculate integer percentage
+            relative_importance = int(round((freq / total_missing_freq) * 100))
             skills_missing.append(Skill(name=skill_name, importance=relative_importance))
+            
+        # Due to rounding, the sum might not be exactly 100. Add remainder to the first item.
+        if skills_missing:
+            current_sum = sum(s.importance for s in skills_missing)
+            remainder = 100 - current_sum
+            skills_missing[0].importance += remainder
 
     # Calculate overall match percentage based on frequency weights
     overall_match = int((user_weight_score / total_top_20_weight) * 100)
