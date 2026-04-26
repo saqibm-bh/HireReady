@@ -2,10 +2,12 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status, De
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from typing import List
+import json
 from app.services.parsing_service import parse_resume
 from app.schema.resume import ResumeParseResponse, ResumeHistoryResponse, ResumeHistoryItem
 from app.database.connection import get_db
 from app.services.auth import get_current_user
+from app.services.gap_analysis_service import perform_gap_analysis
 
 router = APIRouter(
     prefix="/resume",
@@ -53,6 +55,47 @@ async def parse_resume_endpoint(
                 "raw_text": raw_text,
                 "skills": result.technical_skills,
                 "filename": file.filename
+            }
+        )
+        db.commit()
+        # Get cumulative skills
+        all_resumes = db.execute(
+            text("SELECT parsed_skills FROM resumes WHERE user_id = :user_id"),
+            {"user_id": user_id}
+        ).fetchall()
+        
+        unique_skills = set()
+        for r in all_resumes:
+            if r.parsed_skills:
+                for skill in r.parsed_skills:
+                    unique_skills.add(skill)
+                    
+        # Add the current resume's skills just in case they aren't in the DB fetch yet
+        if result.technical_skills:
+            for skill in result.technical_skills:
+                unique_skills.add(skill)
+                
+        # Perform gap analysis
+        overall_match, skills_you_have, skills_missing = perform_gap_analysis(
+            user_skills=list(unique_skills),
+            target_role=target_role
+        )
+        
+        # Serialize missing_skills for JSONB
+        missing_skills_json = json.dumps([{"name": s.name, "importance": s.importance} for s in skills_missing])
+        
+        # Insert into gap_analyses
+        db.execute(
+            text("""
+                INSERT INTO gap_analyses (user_id, target_role, match_percentage, missing_skills, present_skills)
+                VALUES (:user_id, :target_role, :match_percentage, :missing_skills, :present_skills)
+            """),
+            {
+                "user_id": user_id,
+                "target_role": target_role,
+                "match_percentage": overall_match,
+                "missing_skills": missing_skills_json,
+                "present_skills": skills_you_have
             }
         )
         db.commit()

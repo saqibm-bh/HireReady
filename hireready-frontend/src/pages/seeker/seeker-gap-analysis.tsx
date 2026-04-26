@@ -3,11 +3,37 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MatchScoreRing } from '@/components/match-score-ring';
 import { SkillBadge } from '@/components/skill-badge';
-import { gapAnalysis } from '@/lib/mock-data';
+import { useGapAnalysis } from '@/hooks/use-gap-analysis';
 import { ArrowRight, TrendingUp } from 'lucide-react';
 
 export function SeekerGapAnalysis() {
   const { navigate } = useNavigation();
+  const { data: gapAnalysis, isLoading, error } = useGapAnalysis();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-sienna border-t-transparent" />
+          <p className="text-muted-foreground animate-pulse">Analyzing your skills...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !gapAnalysis) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
+        <h2 className="text-xl font-semibold text-foreground">No Analysis Available</h2>
+        <p className="text-muted-foreground text-center max-w-md">
+          {error || "We need your resume to perform a gap analysis. Please upload your resume first."}
+        </p>
+        <Button onClick={() => navigate('seeker-resume')} className="bg-sienna text-warm-white hover:bg-sienna/90 cursor-pointer">
+          Go to Resume Upload
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-liquid">
