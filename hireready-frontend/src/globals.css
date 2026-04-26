@@ -248,3 +248,28 @@
     @apply absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none;
   }
 }
+/* Force Sonner Toasts to Sienna */
+[data-sonner-toast] {
+  --normal-bg: #C4845A !important;
+  --normal-border: #C4845A !important;
+  --normal-text: #FAFAF7 !important;
+  --success-bg: #C4845A !important;
+  --success-border: #C4845A !important;
+  --success-text: #FAFAF7 !important;
+  --error-bg: #C4845A !important;
+  --error-border: #C4845A !important;
+  --error-text: #FAFAF7 !important;
+  background-color: #C4845A !important;
+  color: #FAFAF7 !important;
+  border-color: #C4845A !important;
+  font-family: 'Raleway', sans-serif !important;
+  border-radius: 0.75rem !important;
+}
+
+[data-sonner-toast] [data-icon] {
+  color: #FAFAF7 !important;
+}
+
+[data-sonner-toast] [data-description] {
+  color: rgba(250, 250, 247, 0.9) !important;
+}

@@ -5,19 +5,19 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       className="toaster group"
-      style={
-        {
-          '--normal-bg': 'var(--sienna)',
-          '--normal-text': 'var(--warm-white)',
-          '--normal-border': 'var(--sienna)',
-          '--error-bg': 'var(--sienna)',
-          '--error-text': 'var(--warm-white)',
-          '--error-border': 'var(--sienna)',
-          '--success-bg': 'var(--sienna)',
-          '--success-text': 'var(--warm-white)',
-          '--success-border': 'var(--sienna)',
-        } as React.CSSProperties
-      }
+      toastOptions={{
+        style: {
+          background: 'var(--sienna)',
+          color: 'var(--warm-white)',
+          border: '1px solid var(--sienna)',
+        },
+        classNames: {
+          toast: "group toast shadow-2xl font-heading",
+          description: "text-warm-white/90",
+          actionButton: "bg-warm-white text-sienna font-bold",
+          cancelButton: "bg-muted text-muted-foreground",
+        },
+      }}
       {...props}
     />
   )

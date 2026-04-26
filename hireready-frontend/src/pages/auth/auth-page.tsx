@@ -17,8 +17,9 @@ export function AuthPage() {
   const { login, register, isLoading } = useAuth();
   const [mode, setMode] = useState<AuthMode>(pageParams?.mode || 'login');
   const [selectedRole, setSelectedRole] = useState<'job-seeker' | 'recruiter'>(pageParams?.role || 'job-seeker');
-  const [formData, setFormData] = useState({ name: '', company: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ name: '', company: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (pageParams?.mode) setMode(pageParams.mode);
@@ -28,6 +29,10 @@ export function AuthPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (mode === 'signup') {
+      if (formData.password !== formData.confirmPassword) {
+        toast.error('Passwords do not match');
+        return;
+      }
       try {
         await register({
           name: formData.name || formData.email.split('@')[0], 
@@ -37,7 +42,7 @@ export function AuthPage() {
         });
         toast.success('Account Created');
         setMode('login');
-        setFormData(prev => ({ ...prev, password: '' }));
+        setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
       } catch (error: any) {
         toast.error(error.message || 'Failed to create account');
       }
@@ -223,6 +228,32 @@ export function AuthPage() {
                 </button>
               </div>
             </div>
+
+            {/* Confirm Password (Signup only) */}
+            {mode === 'signup' && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-foreground font-medium">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    className="border-border bg-background pl-10 pr-10"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-sienna transition-colors focus:outline-none"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Submit Button */}
             <Button
