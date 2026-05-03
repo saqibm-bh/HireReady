@@ -6,11 +6,20 @@ from app.database.connection import get_db
 from app.services.auth import get_current_user
 from app.schema.job import JobCreate, JobResponse
 from app.services.job_service import create_new_job_posting, get_recruiter_jobs
+from app.services.gap_analysis_service import get_all_roles, get_all_skills
 
 router = APIRouter(
     prefix="/jobs",
     tags=["Jobs"]
 )
+
+@router.get("/meta")
+def get_jobs_metadata():
+    """Returns available job titles and skills for dropdowns."""
+    return {
+        "roles": get_all_roles(),
+        "skills": get_all_skills()
+    }
 
 @router.post("/", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
 def create_job(

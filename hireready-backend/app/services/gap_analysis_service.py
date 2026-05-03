@@ -1,10 +1,9 @@
 import pickle
 import os
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Set
 from app.schema.gap_analysis import Skill
 
 # Load the knowledge base once when the module is imported
-# This assumes knowledge_base.pkl is in the root of the backend directory
 KNOWLEDGE_BASE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'knowledge_base.pkl')
 
 try:
@@ -42,63 +41,47 @@ VAGUE_SKILLS = {
 def is_vague(skill: str, target_role: str) -> bool:
     s = skill.lower().strip()
     t = target_role.lower().strip()
-    
-    # Check against blacklist
     if s in VAGUE_SKILLS:
         return True
-    
-    # Check if skill is too similar to target role
     if s == t:
         return True
-        
-    # If the skill name is a subset of the target role name (e.g. "Engineering" in "Software Engineering")
-    # or if the target role name is a subset of the skill (e.g. "Software Engineering" in "Software Engineering Principles")
     words_s = set(s.split())
     words_t = set(t.split())
-    
     if len(words_s) > 0 and words_s.issubset(words_t):
         return True
-        
     return False
 
+def get_all_roles() -> List[str]:
+    """Returns a sorted list of all available job roles in the knowledge base."""
+    return sorted(list(knowledge_base.keys()))
+
+def get_all_skills() -> List[str]:
+    """Returns a sorted list of all unique skills across all roles, excluding vague ones."""
+    all_skills: Set[str] = set()
+    for role_skills in knowledge_base.values():
+        for skill in role_skills.keys():
+            # Basic filtering for the global list
+            if skill.lower() not in VAGUE_SKILLS:
+                all_skills.add(skill)
+    return sorted(list(all_skills))
+
 def perform_gap_analysis(user_skills: List[str], target_role: str) -> Tuple[int, List[str], List[Skill]]:
-    """
-    Compares user_skills against the top 20 required skills for target_role from the knowledge base.
-    Returns:
-        overallMatch (int): Percentage match (0-100)
-        skillsYouHave (List[str]): Overlapping skills
-        skillsMissing (List[Skill]): Missing skills with relative importance (0-100)
-    """
     if target_role not in knowledge_base:
         return 0, [], []
 
-    # Get the dictionary of skills and their frequencies for the target role
     role_data: Dict[str, int] = knowledge_base[target_role]
-    
-    # Sort all role skills by frequency descending
     sorted_role_skills = sorted(role_data.items(), key=lambda item: item[1], reverse=True)
-    
-    # Filter out skills that are vague or redundant with the target role
     filtered_role_skills = [
         (skill, freq) for skill, freq in sorted_role_skills
         if not is_vague(skill, target_role)
     ]
-    
-    # Take the top 20 skills as our baseline
     top_20_skills = filtered_role_skills[:20]
-    
-    # Calculate the total weight (sum of frequencies) for the top 20
     total_top_20_weight = sum(freq for skill, freq in top_20_skills)
     if total_top_20_weight == 0:
         return 0, [], []
 
-
-
-    # Normalize user skills (lowercase, strip whitespace) for matching
     normalized_user_skills = {skill.lower().strip() for skill in user_skills}
-
     skills_you_have = []
-    skills_missing = []
     user_weight_score = 0
     missing_skill_data = []
 
@@ -110,27 +93,17 @@ def perform_gap_analysis(user_skills: List[str], target_role: str) -> Tuple[int,
         else:
             missing_skill_data.append((skill_name, freq))
 
-    # Calculate relative importance so they add up to exactly 100
+    skills_missing = []
     total_missing_freq = sum(freq for _, freq in missing_skill_data)
-    
     if total_missing_freq > 0:
         for skill_name, freq in missing_skill_data:
-            # Calculate integer percentage
             relative_importance = int(round((freq / total_missing_freq) * 100))
             skills_missing.append(Skill(name=skill_name, importance=relative_importance))
-            
-        # Due to rounding, the sum might not be exactly 100. Add remainder to the first item.
         if skills_missing:
             current_sum = sum(s.importance for s in skills_missing)
             remainder = 100 - current_sum
             skills_missing[0].importance += remainder
 
-    # Calculate overall match percentage based on frequency weights
     overall_match = int((user_weight_score / total_top_20_weight) * 100)
-
-    # Sort missing skills by importance (they should already be sorted from earlier, but just to be safe)
     skills_missing.sort(key=lambda s: s.importance, reverse=True)
-
-    # Return all missing skills from the top 20
     return overall_match, skills_you_have, skills_missing
-
