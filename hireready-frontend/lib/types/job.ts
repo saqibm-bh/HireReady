@@ -1,8 +1,4 @@
-export interface Skill {
-  name: string;
-  importance: number;
-  category?: string;
-}
+import { Skill } from './common';
 
 export interface JobPosting {
   id: string;

@@ -1,3 +1,9 @@
+export interface Skill {
+  name: string;
+  importance: number;
+  category?: string;
+}
+
 export interface LearningResource {
   id: string;
   skill: string;

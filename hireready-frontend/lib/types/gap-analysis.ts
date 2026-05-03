@@ -1,7 +1,4 @@
-export interface Skill {
-  name: string;
-  importance: number;
-}
+import { Skill } from './common';
 
 export interface GapAnalysisResponse {
   targetRole: string;
