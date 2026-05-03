@@ -4,22 +4,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRoadmap } from '@/hooks/use-roadmap';
 import { useGapAnalysis } from '@/hooks/use-gap-analysis';
-import { Check, Circle, Clock, ArrowLeft } from 'lucide-react';
+import { useResume } from '@/hooks/use-resume';
+import { toast } from 'sonner';
+import { Check, Circle, Clock, ArrowLeft, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function SeekerRoadmap() {
   const { navigate } = useNavigation();
-  const { data: roadmap, isLoading: isRoadmapLoading, error: roadmapError } = useRoadmap();
+  const { data: roadmap, isLoading: isRoadmapLoading, error: roadmapError, completeStep } = useRoadmap();
   const { data: gapAnalysis, isLoading: isGapLoading } = useGapAnalysis();
+  const { refreshData: refreshResumeData } = useResume();
+  
+  const [isUpdating, setIsUpdating] = useState<number | null>(null);
 
-  // Since we don't have persistence for completion yet, we'll use a local state
-  // In a real app, this would come from the backend
-  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-
-  const toggleComplete = (stepNumber: number) => {
-    setCompletedSteps((prev) =>
-      prev.includes(stepNumber) ? prev.filter((s) => s !== stepNumber) : [...prev, stepNumber]
-    );
+  const handleToggleComplete = async (stepNumber: number) => {
+    setIsUpdating(stepNumber);
+    try {
+      await completeStep(stepNumber);
+      await refreshResumeData(); // Refresh skills on resume page
+      toast.success("Step marked as complete! Your skills have been updated.");
+    } catch (err) {
+      toast.error("Failed to update step status.");
+    } finally {
+      setIsUpdating(null);
+    }
   };
 
   const isLoading = isRoadmapLoading || isGapLoading;
@@ -30,7 +38,7 @@ export function SeekerRoadmap() {
       <div className="flex items-center justify-center h-[50vh]">
         <div className="flex flex-col items-center gap-2">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-sienna border-t-transparent" />
-          <p className="text-muted-foreground animate-pulse">Generating your roadmap...</p>
+          <p className="text-muted-foreground animate-pulse">Retrieving your roadmap...</p>
         </div>
       </div>
     );
@@ -51,7 +59,8 @@ export function SeekerRoadmap() {
   }
 
   const steps = roadmap.steps;
-  const progress = Math.round((completedSteps.length / steps.length) * 100);
+  const completedStepsCount = steps.filter(s => s.completed).length;
+  const progress = Math.round((completedStepsCount / steps.length) * 100);
 
   return (
     <div className="space-y-6 animate-liquid">
@@ -79,7 +88,7 @@ export function SeekerRoadmap() {
             <div>
               <h3 className="text-lg font-semibold">Your Progress</h3>
               <p className="mt-1 text-muted-foreground">
-                {completedSteps.length} of {steps.length} skills completed
+                {completedStepsCount} of {steps.length} skills completed
               </p>
             </div>
             <div className="text-right">
@@ -102,10 +111,10 @@ export function SeekerRoadmap() {
         <div className="absolute left-6 top-0 h-full w-0.5 bg-border md:left-8" />
 
         {steps.map((item, index) => {
-          const isCompleted = completedSteps.includes(item.step);
-
+          const isCompleted = !!item.completed;
+          
           // A step is active if it's the first one or if the previous one is completed
-          const isPreviousCompleted = index === 0 || completedSteps.includes(steps[index - 1].step);
+          const isPreviousCompleted = index === 0 || !!steps[index - 1].completed;
           const isActive = !isCompleted && isPreviousCompleted;
           const isLocked = !isCompleted && !isPreviousCompleted;
 
@@ -148,7 +157,7 @@ export function SeekerRoadmap() {
                           Step {item.step}
                         </span>
                         {isCompleted && (
-                          <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-xs text-green-600 font-bold">
+                          <span className="rounded-full bg-sienna/10 px-2 py-0.5 text-xs text-sienna font-bold">
                             Done
                           </span>
                         )}
@@ -181,7 +190,7 @@ export function SeekerRoadmap() {
 
                   <Button
                     variant={isCompleted ? "outline" : "default"}
-                    disabled={isLocked}
+                    disabled={isLocked || isUpdating === item.step}
                     className={cn(
                       "w-full cursor-pointer transition-all duration-300",
                       isCompleted
@@ -189,9 +198,15 @@ export function SeekerRoadmap() {
                         : "bg-sienna text-warm-white hover:bg-sienna/90 shadow-md hover:shadow-lg active:scale-[0.98]",
                       isLocked && "cursor-not-allowed grayscale bg-muted text-muted-foreground"
                     )}
-                    onClick={() => toggleComplete(item.step)}
+                    onClick={() => handleToggleComplete(item.step)}
                   >
-                    {isCompleted ? "Completed" : "Mark as Complete"}
+                    {isUpdating === item.step ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : isCompleted ? (
+                      "Completed"
+                    ) : (
+                      "Mark as Complete"
+                    )}
                   </Button>
                 </CardContent>
               </Card>

@@ -15,7 +15,7 @@ export function SeekerGapAnalysis() {
       <div className="flex items-center justify-center h-[50vh]">
         <div className="flex flex-col items-center gap-2">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-sienna border-t-transparent" />
-          <p className="text-muted-foreground animate-pulse">Analyzing your skills...</p>
+          <p className="text-muted-foreground animate-pulse">Retrieving your analysis...</p>
         </div>
       </div>
     );
@@ -138,16 +138,17 @@ export function SeekerGapAnalysis() {
       </Card>
 
       {/* CTA */}
-      <Card className="border-border/50 bg-navbar text-navbar-foreground shadow-sm">
-        <CardContent className="flex flex-col items-center justify-between gap-4 p-6 md:flex-row">
+      <Card className="border border-sienna/20 bg-cloud dark:bg-graphite text-graphite dark:text-warm-white shadow-xl relative overflow-hidden animate-liquid">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-sienna/[0.08] rounded-full -mr-32 -mt-32 blur-3xl" />
+        <CardContent className="relative flex flex-col items-center justify-between gap-4 p-8 md:flex-row">
           <div>
-            <h3 className="text-lg font-semibold text-navbar-foreground font-heading">Ready to close the gap?</h3>
-            <p className="mt-1 text-navbar-foreground/70">
-              Follow our personalized learning roadmap to acquire the missing skills
+            <h3 className="text-xl font-bold font-heading tracking-tight text-sienna dark:text-warm-white">Ready to close the gap?</h3>
+            <p className="mt-1 text-slate dark:text-warm-white/80 max-w-md">
+              Follow our personalized learning roadmap to acquire the missing skills and fast-track your career.
             </p>
           </div>
           <Button
-            className="w-full bg-sienna text-warm-white hover:bg-sienna/90 md:w-auto cursor-pointer"
+            className="w-full bg-sienna text-warm-white hover:bg-sienna/90 md:w-auto cursor-pointer shadow-lg hover:shadow-sienna/20 transition-all duration-300"
             onClick={() => navigate('seeker-roadmap')}
           >
             View Learning Roadmap

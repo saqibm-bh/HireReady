@@ -6,6 +6,9 @@ class RoadmapStep(BaseModel):
     skill: str
     why_it_matters: str
     estimated_time: str
+    completed: bool = False
 
-class Roadmap(BaseModel):
+class RoadmapResponse(BaseModel):
     steps: List[RoadmapStep]
+
+Roadmap = RoadmapResponse

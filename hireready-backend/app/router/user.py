@@ -76,5 +76,6 @@ def read_users_me(current_user = Depends(get_current_user)):
         email=current_user.email,
         name=current_user.name,
         role=current_user.role,
-        target_role=current_user.target_role
+        target_role=current_user.target_role,
+        skills=current_user.skills if current_user.skills else []
     )

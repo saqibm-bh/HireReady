@@ -6,12 +6,12 @@ import { SkillBadge } from '@/components/skill-badge';
 import { useResume } from '@/hooks/use-resume';
 import { useNavigation } from '@/lib/navigation-context';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, FileText, X, Search, Info, Loader2 } from 'lucide-react';
+import { Upload, FileText, X, Search, Info, Loader2, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export function SeekerResume() {
-  const { userData, refreshUserData } = useNavigation();
+  const { userData, refreshUserData, navigate } = useNavigation();
   const { history, skills, isLoading, isUploading, uploadResume } = useResume();
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -76,11 +76,21 @@ export function SeekerResume() {
 
   return (
     <div className="space-y-6 animate-liquid">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Resume Upload</h1>
-        <p className="mt-1 text-muted-foreground">
-          Upload your resume to extract skills and analyze your job fit
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Resume Upload</h1>
+          <p className="mt-1 text-muted-foreground">
+            Upload your resume to extract skills and analyze your job fit
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => navigate('seeker-gap-analysis')}
+          className="border-sienna text-sienna hover:bg-sienna/10 cursor-pointer"
+        >
+          View Gap Analysis
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -174,7 +184,7 @@ export function SeekerResume() {
               {isUploading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing...
+                  Processing...
                 </>
               ) : (
                 'Analyze Resume'

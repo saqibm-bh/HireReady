@@ -54,31 +54,29 @@ async def parse_resume_endpoint(
             {
                 "user_id": user_id,
                 "raw_text": raw_text,
-                "skills": result.technical_skills,
+                "skills": json.dumps(result.technical_skills),
                 "filename": file.filename
             }
         )
         db.commit()
-        # Get cumulative skills
-        all_resumes = db.execute(
-            text("SELECT parsed_skills FROM resumes WHERE user_id = :user_id"),
-            {"user_id": user_id}
-        ).fetchall()
+        # Get existing skills from user record
+        existing_skills = set(current_user.skills) if current_user.skills else set()
         
-        unique_skills = set()
-        for r in all_resumes:
-            if r.parsed_skills:
-                for skill in r.parsed_skills:
-                    unique_skills.add(skill)
-                    
-        # Add the current resume's skills just in case they aren't in the DB fetch yet
+        # Merge with current resume skills
         if result.technical_skills:
             for skill in result.technical_skills:
-                unique_skills.add(skill)
+                existing_skills.add(skill)
+        
+        # Update user record with merged unique skills
+        db.execute(
+            text("UPDATE users SET skills = :skills WHERE id = :user_id"),
+            {"skills": json.dumps(list(existing_skills)), "user_id": user_id}
+        )
+        db.commit()
                 
-        # Perform gap analysis
+        # Perform gap analysis using the now-complete user skills list
         overall_match, skills_you_have, skills_missing = perform_gap_analysis(
-            user_skills=list(unique_skills),
+            user_skills=list(existing_skills),
             target_role=target_role
         )
         
@@ -148,16 +146,5 @@ async def get_cumulative_skills(
     current_user: any = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Returns a unique list of all skills extracted from all resumes uploaded by the user."""
-    resumes = db.execute(
-        text("SELECT parsed_skills FROM resumes WHERE user_id = :user_id"),
-        {"user_id": current_user.id}
-    ).fetchall()
-    
-    unique_skills = set()
-    for r in resumes:
-        if r.parsed_skills:
-            for skill in r.parsed_skills:
-                unique_skills.add(skill)
-    
-    return sorted(list(unique_skills))
+    """Returns a unique list of all skills for the user."""
+    return sorted(current_user.skills) if current_user.skills else []

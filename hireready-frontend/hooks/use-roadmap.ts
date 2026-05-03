@@ -21,6 +21,16 @@ export function useRoadmap() {
     }
   }, []);
 
+  const completeStep = async (stepNumber: number) => {
+    try {
+      await roadmapService.completeStep(stepNumber);
+      await fetchRoadmap(); // Refresh roadmap data
+    } catch (err) {
+      console.error('Failed to complete step:', err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     fetchRoadmap();
   }, [fetchRoadmap]);
@@ -29,6 +39,7 @@ export function useRoadmap() {
     data,
     isLoading,
     error,
-    refetch: fetchRoadmap
+    refetch: fetchRoadmap,
+    completeStep
   };
 }

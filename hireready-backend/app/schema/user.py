@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 class UserCreate(BaseModel):
     name: str
@@ -13,8 +13,8 @@ class UserResponse(BaseModel):
     name: str
     role: str
     target_role: Optional[str] = None
+    skills: List[str] = []
 
 class LoginRequest(BaseModel):
     email: str
     password: str
-
