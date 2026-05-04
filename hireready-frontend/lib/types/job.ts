@@ -5,11 +5,9 @@ export interface JobPosting {
   title: string;
   description: string;
   requiredSkills: string[];
-  experienceLevel: 'entry' | 'mid' | 'senior' | 'lead';
-  jobType: 'full-time' | 'part-time' | 'contract' | 'remote';
+  experienceLevel: string;
+  workLocation: string;
+  employmentType: string;
   recruiterId: string;
-  companyName: string;
-  postedDate: string;
-  applicantCount: number;
-  avgMatchScore: number;
+  createdAt: string;
 }

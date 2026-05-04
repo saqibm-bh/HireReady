@@ -4,16 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Plus, CheckCircle, Search, Loader2 } from 'lucide-react';
+import { X, Plus, CheckCircle, Search, Loader2, Globe, Briefcase, GraduationCap } from 'lucide-react';
 import { useJobs } from '@/hooks/use-jobs';
 import { Input } from '@/components/ui/input';
 
 export function RecruiterPostJob() {
   const { metadata, createJob, isCreating } = useJobs();
-
+  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    experience_level: '',
+    work_location: '',
+    employment_type: '',
   });
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [skillSearch, setSkillSearch] = useState('');
@@ -69,7 +72,13 @@ export function RecruiterPostJob() {
               className="mt-6 bg-sienna text-warm-white hover:bg-sienna/90 cursor-pointer"
               onClick={() => {
                 setSubmitted(false);
-                setFormData({ title: '', description: '' });
+                setFormData({ 
+                  title: '', 
+                  description: '',
+                  experience_level: '',
+                  work_location: '',
+                  employment_type: '',
+                });
                 setSelectedSkills([]);
               }}
             >
@@ -106,8 +115,8 @@ export function RecruiterPostJob() {
                 <Label htmlFor="title" className="text-foreground">
                   Job Title
                 </Label>
-                <Select
-                  value={formData.title}
+                <Select 
+                  value={formData.title} 
                   onValueChange={(val) => setFormData(prev => ({ ...prev, title: val }))}
                 >
                   <SelectTrigger id="title" className="border-border bg-background">
@@ -142,7 +151,7 @@ export function RecruiterPostJob() {
             <Card className="border-border/50 shadow-sm bg-card">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-semibold text-foreground">
-                  Requirements
+                  Requirements & Type
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -206,25 +215,80 @@ export function RecruiterPostJob() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-foreground">Experience Level</Label>
-                  <Select>
-                    <SelectTrigger className="border-border bg-background">
-                      <SelectValue placeholder="Select experience level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="entry">Entry Level</SelectItem>
-                      <SelectItem value="mid">Mid Level</SelectItem>
-                      <SelectItem value="senior">Senior Level</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-foreground flex items-center gap-2">
+                      <GraduationCap className="h-4 w-4" />
+                      Experience Level
+                    </Label>
+                    <Select 
+                      value={formData.experience_level}
+                      onValueChange={(val) => setFormData(prev => ({ ...prev, experience_level: val }))}
+                    >
+                      <SelectTrigger className="border-border bg-background">
+                        <SelectValue placeholder="Select level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="entry">Entry Level</SelectItem>
+                        <SelectItem value="mid">Mid Level</SelectItem>
+                        <SelectItem value="senior">Senior Level</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-foreground flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      Work Location
+                    </Label>
+                    <Select 
+                      value={formData.work_location}
+                      onValueChange={(val) => setFormData(prev => ({ ...prev, work_location: val }))}
+                    >
+                      <SelectTrigger className="border-border bg-background">
+                        <SelectValue placeholder="Select location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="onsite">Onsite</SelectItem>
+                        <SelectItem value="remote">Remote</SelectItem>
+                        <SelectItem value="hybrid">Hybrid</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-foreground flex items-center gap-2">
+                      <Briefcase className="h-4 w-4" />
+                      Employment Type
+                    </Label>
+                    <Select 
+                      value={formData.employment_type}
+                      onValueChange={(val) => setFormData(prev => ({ ...prev, employment_type: val }))}
+                    >
+                      <SelectTrigger className="border-border bg-background">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="full-time">Full-time</SelectItem>
+                        <SelectItem value="part-time">Part-time</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             <Button
               type="submit"
-              disabled={isCreating || !formData.title || !formData.description || selectedSkills.length === 0}
+              disabled={
+                isCreating || 
+                !formData.title || 
+                !formData.description || 
+                !formData.experience_level ||
+                !formData.work_location ||
+                !formData.employment_type ||
+                selectedSkills.length === 0
+              }
               className="w-full bg-sienna text-warm-white hover:bg-sienna/90 cursor-pointer shadow-lg hover:shadow-sienna/20 transition-all disabled:opacity-50"
             >
               {isCreating ? (

@@ -42,7 +42,10 @@ def create_job(
             title=new_job[2],
             description=new_job[3],
             required_skills=new_job[4],
-            created_at=new_job[5]
+            experience_level=new_job[5],
+            work_location=new_job[6],
+            employment_type=new_job[7],
+            created_at=new_job[8]
         )
     except Exception as e:
         raise HTTPException(
@@ -70,6 +73,9 @@ def get_my_job_postings(
             title=r[2],
             description=r[3],
             required_skills=r[4],
-            created_at=r[5]
+            experience_level=r[5],
+            work_location=r[6],
+            employment_type=r[7],
+            created_at=r[8]
         ) for r in results
     ]

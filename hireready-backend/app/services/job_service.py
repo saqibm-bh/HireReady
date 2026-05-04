@@ -9,15 +9,18 @@ def create_new_job_posting(db: Session, recruiter_id: str, request: JobCreate):
     """
     result = db.execute(
         text("""
-            INSERT INTO job_postings (recruiter_id, title, description, required_skills)
-            VALUES (:recruiter_id, :title, :description, :skills)
-            RETURNING id, recruiter_id, title, description, required_skills, created_at
+            INSERT INTO job_postings (recruiter_id, title, description, required_skills, experience_level, work_location, employment_type)
+            VALUES (:recruiter_id, :title, :description, :skills, :experience_level, :work_location, :employment_type)
+            RETURNING id, recruiter_id, title, description, required_skills, experience_level, work_location, employment_type, created_at
         """),
         {
             "recruiter_id": recruiter_id,
             "title": request.title,
             "description": request.description,
-            "skills": request.required_skills
+            "skills": request.required_skills,
+            "experience_level": request.experience_level,
+            "work_location": request.work_location,
+            "employment_type": request.employment_type
         }
     )
     db.commit()
@@ -28,6 +31,11 @@ def get_recruiter_jobs(db: Session, recruiter_id: str):
     Retrieves all job postings for a specific recruiter.
     """
     return db.execute(
-        text("SELECT id, recruiter_id, title, description, required_skills, created_at FROM job_postings WHERE recruiter_id = :rid ORDER BY created_at DESC"),
+        text("""
+            SELECT id, recruiter_id, title, description, required_skills, experience_level, work_location, employment_type, created_at 
+            FROM job_postings 
+            WHERE recruiter_id = :rid 
+            ORDER BY created_at DESC
+        """),
         {"rid": recruiter_id}
     ).fetchall()

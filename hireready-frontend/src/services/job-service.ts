@@ -9,6 +9,9 @@ export interface JobCreateRequest {
   title: string;
   description: string;
   required_skills: string[];
+  experience_level: string;
+  work_location: string;
+  employment_type: string;
 }
 
 export interface JobResponse {
@@ -17,6 +20,9 @@ export interface JobResponse {
   title: string;
   description: string;
   required_skills: string[];
+  experience_level: string;
+  work_location: string;
+  employment_type: string;
   created_at: string;
 }
 

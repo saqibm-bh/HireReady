@@ -7,6 +7,9 @@ class JobCreate(BaseModel):
     title: str
     description: str
     required_skills: List[str] = []
+    experience_level: str
+    work_location: str
+    employment_type: str
 
 class JobResponse(BaseModel):
     id: UUID
@@ -14,6 +17,9 @@ class JobResponse(BaseModel):
     title: str
     description: str
     required_skills: List[str]
+    experience_level: str
+    work_location: str
+    employment_type: str
     created_at: datetime
 
     class Config:
