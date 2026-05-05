@@ -270,6 +270,8 @@ export function RecruiterPostJob() {
                       <SelectContent>
                         <SelectItem value="full-time">Full-time</SelectItem>
                         <SelectItem value="part-time">Part-time</SelectItem>
+                        <SelectItem value="internship">Internship</SelectItem>
+                        <SelectItem value="contract">Contract</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

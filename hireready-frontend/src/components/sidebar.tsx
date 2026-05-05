@@ -64,11 +64,11 @@ export function Sidebar() {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Fixed for both mobile and desktop */}
       <aside
         className={cn(
-          "fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r border-sidebar-border bg-sidebar transition-transform duration-200 md:relative md:top-0 md:translate-x-0 md:transition-all",
-          sidebarCollapsed ? "-translate-x-full md:w-16" : "translate-x-0"
+          "fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] border-r border-sidebar-border bg-sidebar transition-all duration-300",
+          sidebarCollapsed ? "-translate-x-full md:translate-x-0 md:w-16" : "translate-x-0 w-64"
         )}
       >
         <div className="flex h-full flex-col">
@@ -119,7 +119,7 @@ export function Sidebar() {
                   )}
                 >
                   <Icon className="h-5 w-5 shrink-0" />
-                  {!sidebarCollapsed && <span>{item.label}</span>}
+                  {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
                 </button>
               );
             })}

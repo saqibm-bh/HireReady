@@ -102,17 +102,23 @@ function PageRouter() {
     };
 
     return (
-      <>
+      <div className="flex flex-col min-h-screen bg-background">
         <Navbar />
-        <div className="flex min-h-[calc(100vh-4rem)]">
+        <div className="flex flex-1 pt-16">
           <Sidebar />
-          <main className={`flex-1 bg-background p-4 transition-all md:p-6 ${sidebarCollapsed ? 'md:ml-16' : 'md:ml-0'}`}>
-            <div className="mx-auto max-w-7xl">
-              {renderPage()}
+          <main 
+            className={`flex-1 transition-all duration-300 ${
+              sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'
+            }`}
+          >
+            <div className="p-4 md:p-8">
+              <div className="mx-auto max-w-7xl">
+                {renderPage()}
+              </div>
             </div>
           </main>
         </div>
-      </>
+      </div>
     );
   }
 
