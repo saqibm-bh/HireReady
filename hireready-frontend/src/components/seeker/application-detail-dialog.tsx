@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { FileText, Globe, GraduationCap, Clock, ExternalLink, CheckCircle2, AlertCircle } from 'lucide-react';
+import { FileText, Globe, GraduationCap, Clock, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { ApplicationResponse } from '@/lib/types/application';
 import { SkillBadge } from '@/components/skill-badge';
@@ -55,8 +55,7 @@ export function ApplicationDetailDialog({ isOpen, onClose, application }: Applic
 
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <CheckCircle2 className="h-3 w-3 text-green-500" />
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Skills You Have
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -71,8 +70,7 @@ export function ApplicationDetailDialog({ isOpen, onClose, application }: Applic
               </div>
 
               <div className="space-y-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <AlertCircle className="h-3 w-3 text-sienna" />
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Missing Skills
                 </p>
                 <div className="flex flex-wrap gap-1.5">

@@ -4,6 +4,7 @@ import { useProfile } from '@/hooks/use-profile';
 import { Target, FileText, Calendar, Loader2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ResumeHistoryEntry } from '@/lib/types/profile';
+import { format } from 'date-fns';
 
 export function SeekerProfile() {
   const { data, isLoading, error } = useProfile();
@@ -26,33 +27,6 @@ export function SeekerProfile() {
   }
 
   const userName = data.name || 'User';
-  // Safer initials calculation
-  const initials = userName
-    .split(' ')
-    .filter(Boolean)
-    .map(n => n[0])
-    .join('')
-    .toUpperCase() || '?';
-
-  // Helper to get a clean filename from a URL or raw filename
-  const getDisplayName = (filename: string) => {
-    if (!filename) return 'Unnamed Resume';
-    if (filename.startsWith('http')) {
-      try {
-        const parts = filename.split('/');
-        const lastPart = parts[parts.length - 1];
-        // Remove the unique prefix if possible (e.g., resume_USERID_TIMESTAMP.pdf)
-        const nameParts = lastPart.split('_');
-        if (nameParts.length >= 3) {
-          return nameParts.slice(2).join('_');
-        }
-        return lastPart;
-      } catch (e) {
-        return 'Resume Document';
-      }
-    }
-    return filename;
-  };
 
   return (
     <div className="space-y-6 animate-liquid">
@@ -66,17 +40,13 @@ export function SeekerProfile() {
       {/* Profile Header */}
       <Card className="border-border/50 shadow-sm bg-card">
         <CardContent className="p-6">
-          <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-sienna/10 border-2 border-sienna/20">
-              <span className="text-3xl font-bold text-sienna">{initials}</span>
-            </div>
+          <div className="flex flex-col md:flex-row md:items-start gap-6">
             <div className="flex-1 text-center md:text-left">
               <h2 className="text-2xl font-bold text-foreground font-heading">
                 {userName}
               </h2>
               <div className="mt-2 flex flex-col items-center gap-2 md:flex-row md:items-start">
                 <div className="flex items-center gap-1 text-muted-foreground">
-                  <Target className="h-4 w-4 text-sienna" />
                   <span className="text-sm">{data.target_role || "No Target Role Set"}</span>
                 </div>
               </div>
@@ -149,11 +119,11 @@ export function SeekerProfile() {
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-foreground truncate max-w-[200px] md:max-w-xs">
-                      {getDisplayName(item.filename)}
+                       Resume - {format(new Date(item.created_at), 'MMM dd, yyyy')}
                     </p>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <Calendar className="h-3 w-3" />
-                      <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                      <span>{format(new Date(item.created_at), 'p')}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
