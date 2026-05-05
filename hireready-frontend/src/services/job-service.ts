@@ -1,5 +1,5 @@
 import axiosInstance from '@/lib/axios';
-import { JobMetadata, JobCreateRequest, JobResponse } from '@/lib/types/job';
+import { JobMetadata, JobCreateRequest, JobResponse, JobApplicantResponse } from '@/lib/types/job';
 import { ApplicationResponse } from '@/lib/types/application';
 
 export const jobService = {
@@ -20,6 +20,11 @@ export const jobService = {
   
   getMyPostings: async (): Promise<JobResponse[]> => {
     const response = await axiosInstance.get<JobResponse[]>('/jobs/my-postings');
+    return response.data;
+  },
+
+  getApplicants: async (): Promise<JobApplicantResponse[]> => {
+    const response = await axiosInstance.get<JobApplicantResponse[]>('/jobs/my-applicants');
     return response.data;
   },
 

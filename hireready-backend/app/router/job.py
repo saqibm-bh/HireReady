@@ -8,7 +8,7 @@ import json
 
 from app.database.connection import get_db
 from app.services.auth import get_current_user
-from app.schema.job import JobCreate, JobResponse, ApplicationResponse
+from app.schema.job import JobCreate, JobResponse, ApplicationResponse, JobApplicantResponse
 from app.services.job_service import create_new_job_posting, get_recruiter_jobs, get_all_job_postings
 from app.services.gap_analysis_service import get_all_roles, get_all_skills, calculate_job_match
 from app.database.supabase import supabase
@@ -103,6 +103,57 @@ def get_my_job_postings(
             work_location=r[6],
             employment_type=r[7],
             created_at=r[8]
+        ) for r in results
+    ]
+
+@router.get("/my-applicants", response_model=List[JobApplicantResponse])
+def get_my_applicants(
+    current_user: any = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.get("role") != "recruiter":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only recruiters can view applicants"
+        )
+
+    query = text("""
+        SELECT 
+            ja.id as application_id,
+            ja.job_id,
+            jp.title as job_title,
+            ja.seeker_id,
+            u.name as seeker_name,
+            u.email as seeker_email,
+            ja.resume_url,
+            ja.status,
+            ja.match_score,
+            ja.matched_skills,
+            ja.missing_skills,
+            ja.created_at as applied_at
+        FROM job_applications ja
+        JOIN job_postings jp ON ja.job_id = jp.id
+        JOIN users u ON ja.seeker_id = u.id
+        WHERE jp.recruiter_id = :recruiter_id
+        ORDER BY ja.created_at DESC
+    """)
+    
+    results = db.execute(query, {"recruiter_id": current_user["id"]}).fetchall()
+    
+    return [
+        JobApplicantResponse(
+            id=r.application_id,
+            job_id=r.job_id,
+            job_title=r.job_title,
+            seeker_id=r.seeker_id,
+            seeker_name=r.seeker_name,
+            seeker_email=r.seeker_email,
+            resume_url=r.resume_url,
+            status=r.status,
+            match_score=float(r.match_score),
+            matched_skills=r.matched_skills if r.matched_skills else [],
+            missing_skills=r.missing_skills if r.missing_skills else [],
+            applied_at=r.applied_at
         ) for r in results
     ]
 

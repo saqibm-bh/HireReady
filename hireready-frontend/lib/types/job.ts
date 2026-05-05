@@ -24,6 +24,21 @@ export interface JobResponse {
   created_at: string;
 }
 
+export interface JobApplicantResponse {
+  id: string;
+  job_id: string;
+  job_title: string;
+  seeker_id: string;
+  seeker_name: string;
+  seeker_email: string;
+  resume_url: string;
+  status: string;
+  match_score: number;
+  matched_skills: string[];
+  missing_skills: string[];
+  applied_at: string;
+}
+
 // Deprecated or legacy frontend-only type if still needed elsewhere
 export interface JobPosting {
   id: string;

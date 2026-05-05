@@ -34,3 +34,17 @@ class ApplicationResponse(BaseModel):
     matched_skills: List[str]
     missing_skills: List[str]
     job: JobResponse
+
+class JobApplicantResponse(BaseModel):
+    id: UUID
+    job_id: UUID
+    job_title: str
+    seeker_id: UUID
+    seeker_name: str
+    seeker_email: str
+    resume_url: str
+    status: str
+    match_score: float
+    matched_skills: List[str]
+    missing_skills: List[str]
+    applied_at: datetime
