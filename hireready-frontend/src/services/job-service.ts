@@ -23,6 +23,11 @@ export const jobService = {
     return response.data;
   },
 
+  getRecruiterStats: async (): Promise<{total_postings: number, total_applicants: number, avg_match_score: number}> => {
+    const response = await axiosInstance.get('/jobs/recruiter-stats');
+    return response.data;
+  },
+
   getApplicants: async (): Promise<JobApplicantResponse[]> => {
     const response = await axiosInstance.get<JobApplicantResponse[]>('/jobs/my-applicants');
     return response.data;

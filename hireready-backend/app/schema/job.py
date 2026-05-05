@@ -21,6 +21,8 @@ class JobResponse(BaseModel):
     work_location: str
     employment_type: str
     created_at: datetime
+    applicant_count: int = 0
+    avg_match_score: float = 0.0
 
     class Config:
         from_attributes = True

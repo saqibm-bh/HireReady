@@ -22,6 +22,8 @@ export interface JobResponse {
   work_location: string;
   employment_type: string;
   created_at: string;
+  applicant_count: number;
+  avg_match_score: number;
 }
 
 export interface JobApplicantResponse {
@@ -50,4 +52,6 @@ export interface JobPosting {
   employmentType: string;
   recruiterId: string;
   createdAt: string;
+  applicantCount?: number;
+  avgMatch?: number;
 }

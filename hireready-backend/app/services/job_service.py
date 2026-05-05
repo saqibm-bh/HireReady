@@ -28,26 +28,40 @@ def create_new_job_posting(db: Session, recruiter_id: str, request: JobCreate):
 
 def get_recruiter_jobs(db: Session, recruiter_id: str):
     """
-    Retrieves all job postings for a specific recruiter.
+    Retrieves all job postings for a specific recruiter with applicant counts and avg match score.
     """
     return db.execute(
         text("""
-            SELECT id, recruiter_id, title, description, required_skills, experience_level, work_location, employment_type, created_at 
-            FROM job_postings 
-            WHERE recruiter_id = :rid 
-            ORDER BY created_at DESC
+            SELECT 
+                jp.id, jp.recruiter_id, jp.title, jp.description, 
+                jp.required_skills, jp.experience_level, jp.work_location, 
+                jp.employment_type, jp.created_at,
+                COUNT(ja.id) as applicant_count,
+                COALESCE(AVG(ja.match_score), 0) as avg_match_score
+            FROM job_postings jp
+            LEFT JOIN job_applications ja ON jp.id = ja.job_id
+            WHERE jp.recruiter_id = :rid 
+            GROUP BY jp.id
+            ORDER BY jp.created_at DESC
         """),
         {"rid": recruiter_id}
     ).fetchall()
 
 def get_all_job_postings(db: Session):
     """
-    Retrieves all job postings from the database.
+    Retrieves all job postings from the database with applicant counts and avg match score.
     """
     return db.execute(
         text("""
-            SELECT id, recruiter_id, title, description, required_skills, experience_level, work_location, employment_type, created_at 
-            FROM job_postings 
-            ORDER BY created_at DESC
+            SELECT 
+                jp.id, jp.recruiter_id, jp.title, jp.description, 
+                jp.required_skills, jp.experience_level, jp.work_location, 
+                jp.employment_type, jp.created_at,
+                COUNT(ja.id) as applicant_count,
+                COALESCE(AVG(ja.match_score), 0) as avg_match_score
+            FROM job_postings jp
+            LEFT JOIN job_applications ja ON jp.id = ja.job_id
+            GROUP BY jp.id
+            ORDER BY jp.created_at DESC
         """)
     ).fetchall()

@@ -24,11 +24,20 @@ export function RecruiterPostings() {
     setIsDetailOpen(true);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 animate-liquid">
+        <Loader2 className="h-8 w-8 animate-spin text-sienna" />
+        <p className="text-sm font-medium text-muted-foreground animate-pulse">Loading your postings...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 animate-liquid">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">My Job Postings</h1>
+          <h1 className="text-2xl font-bold text-foreground font-heading">My Job Postings</h1>
           <p className="mt-1 text-muted-foreground">
             Manage all your active job postings
           </p>
@@ -42,11 +51,7 @@ export function RecruiterPostings() {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="flex min-h-[40vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-sienna" />
-        </div>
-      ) : postings.length === 0 ? (
+      {postings.length === 0 ? (
         <div className="flex min-h-[40vh] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border p-12 text-center bg-card">
           <div className="mb-4 rounded-full bg-sienna/10 p-4">
             <Briefcase className="h-8 w-8 text-sienna" />
@@ -106,13 +111,13 @@ export function RecruiterPostings() {
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-sienna" />
                     <span className="text-sm text-foreground">
-                      <strong className="text-foreground">0</strong> <span className="text-muted-foreground">applicants</span>
+                      <strong className="text-foreground">{job.applicant_count}</strong> <span className="text-muted-foreground">applicants</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-sienna" />
                     <span className="text-sm text-foreground">
-                      <strong className="text-foreground">0%</strong> <span className="text-muted-foreground">avg match</span>
+                      <strong className="text-foreground">{job.avg_match_score.toFixed(0)}%</strong> <span className="text-muted-foreground">avg match</span>
                     </span>
                   </div>
                 </div>

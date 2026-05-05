@@ -19,6 +19,41 @@ router = APIRouter(
     tags=["Jobs"]
 )
 
+@router.get("/recruiter-stats")
+def get_recruiter_stats(
+    current_user: any = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.get("role") != "recruiter":
+        raise HTTPException(status_code=403, detail="Only recruiters can access stats")
+    
+    recruiter_id = current_user["id"]
+    
+    # Total Postings
+    total_postings = db.execute(
+        text("SELECT COUNT(*) FROM job_postings WHERE recruiter_id = :rid"),
+        {"rid": recruiter_id}
+    ).scalar()
+    
+    # Total Applicants & Avg Match Score
+    stats = db.execute(
+        text("""
+            SELECT 
+                COUNT(ja.id) as total_applicants,
+                COALESCE(AVG(ja.match_score), 0) as avg_match_score
+            FROM job_applications ja
+            JOIN job_postings jp ON ja.job_id = jp.id
+            WHERE jp.recruiter_id = :rid
+        """),
+        {"rid": recruiter_id}
+    ).fetchone()
+    
+    return {
+        "total_postings": total_postings or 0,
+        "total_applicants": stats[0] or 0,
+        "avg_match_score": round(float(stats[1]), 1) if stats[1] else 0.0
+    }
+
 @router.get("/meta")
 def get_jobs_metadata():
     """Returns available job titles and skills for dropdowns."""
@@ -43,7 +78,9 @@ def get_all_jobs(
             experience_level=r[5],
             work_location=r[6],
             employment_type=r[7],
-            created_at=r[8]
+            created_at=r[8],
+            applicant_count=r[9],
+            avg_match_score=float(r[10])
         ) for r in results
     ]
 
@@ -71,7 +108,9 @@ def create_job(
             experience_level=new_job[5],
             work_location=new_job[6],
             employment_type=new_job[7],
-            created_at=new_job[8]
+            created_at=new_job[8],
+            applicant_count=0,
+            avg_match_score=0.0
         )
     except Exception as e:
         raise HTTPException(
@@ -102,7 +141,9 @@ def get_my_job_postings(
             experience_level=r[5],
             work_location=r[6],
             employment_type=r[7],
-            created_at=r[8]
+            created_at=r[8],
+            applicant_count=r[9],
+            avg_match_score=float(r[10])
         ) for r in results
     ]
 
@@ -207,7 +248,9 @@ def get_applied_jobs(
                 experience_level=r.experience_level,
                 work_location=r.work_location,
                 employment_type=r.employment_type,
-                created_at=r.job_created_at
+                created_at=r.job_created_at,
+                applicant_count=0, # Not needed for seeker view or needs separate fetch
+                avg_match_score=0.0
             )
         ) for r in results
     ]

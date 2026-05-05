@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { useJobs } from '@/hooks/use-jobs';
 import { useApplicants } from '@/hooks/use-applicants';
 import { format } from 'date-fns';
+import { CandidateDetailDialog } from '@/components/recruiter/candidate-detail-dialog';
+import { JobApplicantResponse } from '@/lib/types/job';
 
 export function RecruiterApplicants() {
   const { postings, fetchMyPostings } = useJobs();
@@ -17,18 +19,13 @@ export function RecruiterApplicants() {
   const [selectedJob, setSelectedJob] = useState<string>('all');
   const [minMatchScore, setMinMatchScore] = useState([0]);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedApplicant, setSelectedApplicant] = useState<JobApplicantResponse | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   useEffect(() => {
     fetchMyPostings();
     fetchApplicants();
   }, [fetchMyPostings, fetchApplicants]);
-
-  // Set default selected job when postings load
-  useEffect(() => {
-    if (postings.length > 0 && selectedJob === 'all') {
-      // Keep it as 'all' or pick first one? Let's stay 'all' to show everything by default
-    }
-  }, [postings, selectedJob]);
 
   const filteredApplicants = useMemo(() => {
     return applicants
@@ -39,6 +36,20 @@ export function RecruiterApplicants() {
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
+
+  const handleRowClick = (applicant: JobApplicantResponse) => {
+    setSelectedApplicant(applicant);
+    setIsDetailOpen(true);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[80vh] flex-col items-center justify-center gap-4 animate-liquid">
+        <Loader2 className="h-8 w-8 animate-spin text-sienna" />
+        <p className="text-sm font-medium text-muted-foreground animate-pulse">Loading applicant data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-liquid">
@@ -109,15 +120,10 @@ export function RecruiterApplicants() {
               <Filter className="h-5 w-5 text-sienna" />
               {filteredApplicants.length} Applicants
             </div>
-            {isLoading && <Loader2 className="h-5 w-5 animate-spin text-sienna" />}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {isLoading ? (
-            <div className="flex min-h-[40vh] items-center justify-center p-12">
-              <Loader2 className="h-8 w-8 animate-spin text-sienna" />
-            </div>
-          ) : filteredApplicants.length === 0 ? (
+          {filteredApplicants.length === 0 ? (
             <div className="py-20 text-center flex flex-col items-center gap-3">
                <div className="p-4 bg-muted rounded-full">
                   <User className="h-8 w-8 text-muted-foreground" />
@@ -138,13 +144,16 @@ export function RecruiterApplicants() {
                     <th className="px-6 py-4 text-left font-bold text-muted-foreground uppercase tracking-wider">Matched Skills</th>
                     <th className="px-6 py-4 text-left font-bold text-muted-foreground uppercase tracking-wider">Missing Skills</th>
                     <th className="px-6 py-4 text-left font-bold text-muted-foreground uppercase tracking-wider">Applied On</th>
-                    <th className="px-6 py-4 text-center font-bold text-muted-foreground uppercase tracking-wider">Status</th>
                     <th className="px-6 py-4 text-center font-bold text-muted-foreground uppercase tracking-wider">Resume</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/50">
                   {filteredApplicants.map((applicant) => (
-                    <tr key={applicant.id} className="hover:bg-muted/10 transition-colors group">
+                    <tr 
+                      key={applicant.id} 
+                      className="hover:bg-muted/10 transition-colors group cursor-pointer"
+                      onClick={() => handleRowClick(applicant)}
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sienna/10 border border-sienna/20 shadow-inner">
@@ -205,21 +214,12 @@ export function RecruiterApplicants() {
                          {format(new Date(applicant.applied_at), 'MMM dd, yyyy')}
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className={cn(
-                          "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-tighter border",
-                          applicant.status === 'shortlisted' ? "bg-sienna/10 text-sienna border-sienna/30" :
-                          applicant.status === 'applied' ? "bg-slate/10 text-slate border-slate/30" :
-                          "bg-muted text-muted-foreground border-border"
-                        )}>
-                          {applicant.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center">
                          <a 
                             href={applicant.resume_url} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-sienna/10 text-muted-foreground hover:text-sienna transition-all"
+                            onClick={(e) => e.stopPropagation()}
                          >
                             <ExternalLink className="h-4 w-4" />
                          </a>
@@ -232,6 +232,12 @@ export function RecruiterApplicants() {
           )}
         </CardContent>
       </Card>
+
+      <CandidateDetailDialog 
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        applicant={selectedApplicant}
+      />
     </div>
   );
 }
