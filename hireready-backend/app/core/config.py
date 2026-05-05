@@ -6,9 +6,10 @@ class Settings(BaseSettings):
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     GROQ_API_KEY: str
+    SUPABASE_URL: str
+    SUPABASE_SERVICE_ROLE_KEY: str
 
     class Config:
         env_file = ".env"
 
 settings = Settings()
-

@@ -1,12 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from typing import List
+from uuid import UUID
+from datetime import datetime
 
 from app.database.connection import get_db
 from app.services.auth import get_current_user
 from app.schema.job import JobCreate, JobResponse
 from app.services.job_service import create_new_job_posting, get_recruiter_jobs, get_all_job_postings
 from app.services.gap_analysis_service import get_all_roles, get_all_skills
+from app.database.supabase import supabase
 
 router = APIRouter(
     prefix="/jobs",
@@ -99,3 +103,55 @@ def get_my_job_postings(
             created_at=r[8]
         ) for r in results
     ]
+
+@router.post("/{job_id}/apply")
+async def apply_to_job(
+    job_id: UUID,
+    file: UploadFile = File(...),
+    current_user: any = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if file.content_type != "application/pdf":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only PDF files are supported"
+        )
+
+    try:
+        # 1. Upload to Supabase Storage
+        file_content = await file.read()
+        file_extension = file.filename.split(".")[-1]
+        unique_filename = f"{job_id}_{current_user['id']}_{int(datetime.now().timestamp())}.{file_extension}"
+        
+        # Upload using the dedicated client
+        supabase.storage.from_("resumes").upload(
+            path=unique_filename,
+            file=file_content,
+            file_options={"content-type": "application/pdf"}
+        )
+        
+        # Get public URL
+        resume_url = supabase.storage.from_("resumes").get_public_url(unique_filename)
+
+        # 2. Save to database using existing SQLAlchemy session
+        db.execute(
+            text("""
+                INSERT INTO job_applications (job_id, seeker_id, resume_url)
+                VALUES (:job_id, :seeker_id, :resume_url)
+            """),
+            {
+                "job_id": job_id,
+                "seeker_id": current_user["id"],
+                "resume_url": resume_url
+            }
+        )
+        db.commit()
+
+        return {"message": "Application submitted successfully", "resume_url": resume_url}
+    
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to submit application: {str(e)}"
+        )

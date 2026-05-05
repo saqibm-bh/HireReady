@@ -6,6 +6,7 @@ import { SkillBadge } from '@/components/skill-badge';
 import { useJobs } from '@/hooks/use-jobs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
+import { ApplyDialog } from '@/components/seeker/apply-dialog';
 import { 
   Search, 
   Clock, 
@@ -22,9 +23,10 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 export function SeekerJobPostings() {
-  const { allJobs, isLoading, fetchAllJobs } = useJobs();
+  const { allJobs, isLoading, fetchAllJobs, applyToJob, isApplying } = useJobs();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
   
   // Filter states
   const [filters, setFilters] = useState({
@@ -104,6 +106,12 @@ export function SeekerJobPostings() {
     experience_level: ['Junior Level', 'Senior Level'],
     work_location: ['Remote', 'Onsite', 'Hybrid'],
     employment_type: ['Full-time', 'Part-time', 'Internship', 'Contract']
+  };
+
+  const handleApply = async (file: File) => {
+    if (selectedJob) {
+      await applyToJob(selectedJob.id, file);
+    }
   };
 
   return (
@@ -378,7 +386,11 @@ export function SeekerJobPostings() {
                         </div>
                       </div>
                     </div>
-                    <Button size="lg" className="bg-sienna text-warm-white hover:bg-sienna/90 px-10 font-bold shadow-lg shadow-black/20">
+                    <Button 
+                      size="lg" 
+                      className="bg-sienna text-warm-white hover:bg-sienna/90 px-10 font-bold shadow-lg shadow-black/20"
+                      onClick={() => setIsApplyDialogOpen(true)}
+                    >
                       Apply Now
                     </Button>
                   </div>
@@ -424,6 +436,16 @@ export function SeekerJobPostings() {
             )}
           </div>
         </div>
+      )}
+
+      {selectedJob && (
+        <ApplyDialog
+          isOpen={isApplyDialogOpen}
+          onClose={() => setIsApplyDialogOpen(false)}
+          jobTitle={selectedJob.title}
+          onApply={handleApply}
+          isApplying={isApplying}
+        />
       )}
     </div>
   );

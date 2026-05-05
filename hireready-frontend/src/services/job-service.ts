@@ -45,5 +45,16 @@ export const jobService = {
   getMyPostings: async (): Promise<JobResponse[]> => {
     const response = await axiosInstance.get<JobResponse[]>('/jobs/my-postings');
     return response.data;
+  },
+
+  applyToJob: async (jobId: string, file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await axiosInstance.post(`/jobs/${jobId}/apply`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
   }
 };

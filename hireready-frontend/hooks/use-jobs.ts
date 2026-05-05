@@ -8,6 +8,7 @@ export function useJobs() {
   const [allJobs, setAllJobs] = useState<JobResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
 
   const fetchMetadata = useCallback(async () => {
     try {
@@ -61,6 +62,23 @@ export function useJobs() {
     }
   };
 
+  const applyToJob = async (jobId: string, file: File) => {
+    setIsApplying(true);
+    try {
+      await jobService.applyToJob(jobId, file);
+      toast.success('Application submitted!', {
+        description: 'Your resume has been uploaded successfully.'
+      });
+    } catch (err: any) {
+      toast.error('Application failed', {
+        description: err.response?.data?.detail || 'Failed to upload resume. Please try again.'
+      });
+      throw err;
+    } finally {
+      setIsApplying(false);
+    }
+  };
+
   useEffect(() => {
     fetchMetadata();
   }, [fetchMetadata]);
@@ -71,8 +89,10 @@ export function useJobs() {
     allJobs,
     isLoading,
     isCreating,
+    isApplying,
     fetchMyPostings,
     fetchAllJobs,
-    createJob
+    createJob,
+    applyToJob
   };
 }
