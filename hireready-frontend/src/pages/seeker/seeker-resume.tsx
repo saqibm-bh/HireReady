@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export function SeekerResume() {
-  const { userData, refreshUserData, navigate } = useNavigation();
+  const { userData, refreshUser, navigate } = useNavigation();
   const { history, skills, isLoading, isUploading, uploadResume } = useResume();
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -60,7 +60,7 @@ export function SeekerResume() {
     try {
       await uploadResume(selectedFile, targetRole);
       setSelectedFile(null);
-      await refreshUserData(); // Refresh profile to get the new target role
+      await refreshUser(); // Fixed: Use refreshUser from navigation context
     } catch (error) {
       // Error is handled in the hook's toast
     }

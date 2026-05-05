@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { MatchScoreRing } from '@/components/match-score-ring';
 import { SkillBadge } from '@/components/skill-badge';
 import { useDashboard } from '@/hooks/use-dashboard';
-import { jobSeekerApplications } from '@/lib/mock-data';
 import { ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { RecentApplicationDashboard, MissingSkillDashboard } from '@/lib/types/dashboard';
 
 export function SeekerDashboard() {
   const { navigate, userData } = useNavigation();
@@ -81,7 +82,7 @@ export function SeekerDashboard() {
             <div>
               <span className="text-sm text-muted-foreground">Top Missing Skills</span>
               <div className="mt-2 flex flex-wrap gap-2">
-                {data.top_missing_skills.slice(0, 5).map((skill) => (
+                {data.top_missing_skills.slice(0, 5).map((skill: MissingSkillDashboard) => (
                   <SkillBadge key={skill.name} skill={skill.name} variant="outlined" size="sm" />
                 ))}
               </div>
@@ -144,7 +145,7 @@ export function SeekerDashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
-            {data.top_missing_skills.map((skill) => (
+            {data.top_missing_skills.map((skill: MissingSkillDashboard) => (
               <div
                 key={skill.name}
                 className="rounded-lg border border-border bg-background/50 p-4"
@@ -168,7 +169,7 @@ export function SeekerDashboard() {
         </CardContent>
       </Card>
 
-      {/* Recent Applications (Static) */}
+      {/* Recent Applications (Dynamic) */}
       <Card className="glass-panel">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-bold text-foreground font-heading">Recent Applications</CardTitle>
@@ -184,36 +185,41 @@ export function SeekerDashboard() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="pb-3 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">Position</th>
-                  <th className="pb-3 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">Match</th>
-                  <th className="pb-3 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">Status</th>
-                  <th className="pb-3 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">Applied</th>
-                </tr>
-              </thead>
-              <tbody>
-                {jobSeekerApplications.map((app) => (
-                  <tr key={app.id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
-                    <td className="py-3 text-sm font-medium text-foreground">
-                      {app.jobId === 'job-001' ? 'Senior Frontend Developer' :
-                        app.jobId === 'job-002' ? 'Full Stack Engineer' : 'React Developer'}
-                    </td>
-                    <td className="py-3">
-                      <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${app.matchScore >= 70 ? 'bg-sienna text-warm-white' :
-                          app.matchScore >= 50 ? 'bg-slate text-warm-white' :
-                            'bg-muted text-foreground'
-                        }`}>
-                        {app.matchScore}%
-                      </span>
-                    </td>
-                    <td className="py-3 text-sm capitalize text-muted-foreground font-medium">{app.status}</td>
-                    <td className="py-3 text-sm text-muted-foreground">{app.applyDate}</td>
+            {data.recent_applications.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">You haven't applied to any jobs yet.</p>
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="pb-3 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">Position</th>
+                    <th className="pb-3 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">Match</th>
+                    <th className="pb-3 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="pb-3 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">Applied</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.recent_applications.map((app: RecentApplicationDashboard) => (
+                    <tr key={app.id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
+                      <td className="py-3 text-sm font-medium text-foreground">
+                        {app.job_title}
+                      </td>
+                      <td className="py-3">
+                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${app.match_score >= 70 ? 'bg-sienna text-warm-white' :
+                            app.match_score >= 50 ? 'bg-slate text-warm-white' :
+                              'bg-muted text-foreground'
+                          }`}>
+                          {app.match_score}%
+                        </span>
+                      </td>
+                      <td className="py-3 text-sm capitalize text-muted-foreground font-medium">{app.status}</td>
+                      <td className="py-3 text-sm text-muted-foreground">
+                        {format(new Date(app.applied_at), 'yyyy-MM-dd')}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </CardContent>
       </Card>

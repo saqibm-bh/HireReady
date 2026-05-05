@@ -6,7 +6,7 @@ import { ApplicationDetailDialog } from '@/components/seeker/application-detail-
 import { cn } from '@/lib/utils';
 import { Loader2, SearchX } from 'lucide-react';
 import { format } from 'date-fns';
-import { ApplicationResponse } from '@/services/job-service';
+import { ApplicationResponse } from '@/lib/types/application';
 
 export function SeekerApplications() {
   const { appliedJobs, isLoading, fetchAppliedJobs } = useJobs();
@@ -81,17 +81,20 @@ export function SeekerApplications() {
                             Skills Matched
                           </p>
                           <div className="flex flex-wrap gap-1">
-                            {/* Skills matching logic will be added later, using job skills for now as placeholders */}
-                            {application.job.required_skills.slice(0, 3).map((skill) => (
-                              <SkillBadge
-                                key={skill}
-                                skill={skill}
-                                variant="filled"
-                                size="sm"
-                              />
-                            ))}
-                            {application.job.required_skills.length > 3 && (
-                              <span className="text-[10px] text-muted-foreground">+{application.job.required_skills.length - 3}</span>
+                            {application.matched_skills.length > 0 ? (
+                              application.matched_skills.slice(0, 5).map((skill) => (
+                                <SkillBadge
+                                  key={skill}
+                                  skill={skill}
+                                  variant="filled"
+                                  size="sm"
+                                />
+                              ))
+                            ) : (
+                              <span className="text-[10px] text-muted-foreground">No matches found</span>
+                            )}
+                            {application.matched_skills.length > 5 && (
+                              <span className="text-[10px] text-muted-foreground">+{application.matched_skills.length - 5}</span>
                             )}
                           </div>
                         </div>
@@ -100,7 +103,21 @@ export function SeekerApplications() {
                             Missing Skills
                           </p>
                           <div className="flex flex-wrap gap-1">
-                            <span className="text-[10px] italic text-muted-foreground">Analysis pending</span>
+                            {application.missing_skills.length > 0 ? (
+                              application.missing_skills.slice(0, 5).map((skill) => (
+                                <SkillBadge
+                                  key={skill}
+                                  skill={skill}
+                                  variant="outlined"
+                                  size="sm"
+                                />
+                              ))
+                            ) : (
+                              <span className="text-[10px] text-muted-foreground">None</span>
+                            )}
+                            {application.missing_skills.length > 5 && (
+                              <span className="text-[10px] text-muted-foreground">+{application.missing_skills.length - 5}</span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -109,7 +126,13 @@ export function SeekerApplications() {
                     <div className="flex items-center gap-6 md:flex-col md:items-end md:justify-between h-full">
                       <div className="text-center md:text-right">
                         <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Match Score</p>
-                        <p className="text-2xl font-bold text-muted-foreground">0.0%</p>
+                        <p className={cn(
+                          "text-2xl font-bold",
+                          application.match_score >= 70 ? "text-sienna" : 
+                          application.match_score >= 40 ? "text-foreground" : "text-muted-foreground"
+                        )}>
+                          {application.match_score}%
+                        </p>
                       </div>
                       <p className="text-xs font-medium text-muted-foreground bg-muted/30 px-2 py-1 rounded">
                         Applied {format(new Date(application.applied_at), 'MMM dd, yyyy')}

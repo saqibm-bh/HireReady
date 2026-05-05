@@ -1,18 +1,5 @@
 import axiosInstance from '@/lib/axios';
-
-export interface MissingSkillDashboard {
-  name: string;
-  importance: number;
-}
-
-export interface DashboardResponse {
-  match_score: number;
-  target_role?: string;
-  completed_steps: number;
-  total_steps: number;
-  top_missing_skills: MissingSkillDashboard[];
-  recent_applications_count: number;
-}
+import { DashboardResponse } from '@/lib/types/dashboard';
 
 export const dashboardService = {
   getDashboard: async (): Promise<DashboardResponse> => {

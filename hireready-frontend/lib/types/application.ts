@@ -1,4 +1,4 @@
-import { Skill } from './job';
+import { JobResponse } from './job';
 
 export interface Application {
   id: string;
@@ -12,9 +12,13 @@ export interface Application {
   status: 'pending' | 'reviewed' | 'shortlisted' | 'rejected';
 }
 
-export interface GapAnalysis {
-  targetRole: string;
-  overallMatch: number;
-  skillsYouHave: string[];
-  skillsMissing: Skill[];
+export interface ApplicationResponse {
+  id: string;
+  resume_url: string;
+  status: string;
+  applied_at: string;
+  match_score: number;
+  matched_skills: string[];
+  missing_skills: string[];
+  job: JobResponse;
 }

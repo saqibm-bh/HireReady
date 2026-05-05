@@ -1,7 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SkillBadge } from '@/components/skill-badge';
 import { useProfile } from '@/hooks/use-profile';
-import { Target, FileText, Calendar, Loader2 } from 'lucide-react';
+import { Target, FileText, Calendar, Loader2, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ResumeHistoryEntry } from '@/lib/types/profile';
 
 export function SeekerProfile() {
   const { data, isLoading, error } = useProfile();
@@ -24,7 +26,33 @@ export function SeekerProfile() {
   }
 
   const userName = data.name || 'User';
-  const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+  // Safer initials calculation
+  const initials = userName
+    .split(' ')
+    .filter(Boolean)
+    .map(n => n[0])
+    .join('')
+    .toUpperCase() || '?';
+
+  // Helper to get a clean filename from a URL or raw filename
+  const getDisplayName = (filename: string) => {
+    if (!filename) return 'Unnamed Resume';
+    if (filename.startsWith('http')) {
+      try {
+        const parts = filename.split('/');
+        const lastPart = parts[parts.length - 1];
+        // Remove the unique prefix if possible (e.g., resume_USERID_TIMESTAMP.pdf)
+        const nameParts = lastPart.split('_');
+        if (nameParts.length >= 3) {
+          return nameParts.slice(2).join('_');
+        }
+        return lastPart;
+      } catch (e) {
+        return 'Resume Document';
+      }
+    }
+    return filename;
+  };
 
   return (
     <div className="space-y-6 animate-liquid">
@@ -88,9 +116,9 @@ export function SeekerProfile() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {data.skills.length > 0 ? (
+            {(data.skills && data.skills.length > 0) ? (
               <div className="flex flex-wrap gap-2">
-                {data.skills.map((skill) => (
+                {data.skills.map((skill: string) => (
                   <SkillBadge key={skill} skill={skill} variant="filled" />
                 ))}
               </div>
@@ -109,28 +137,39 @@ export function SeekerProfile() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {data.resume_history.length > 0 ? (
+          {(data.resume_history && data.resume_history.length > 0) ? (
             <div className="space-y-3">
-              {data.resume_history.map((item, index) => (
+              {data.resume_history.map((item: ResumeHistoryEntry, index: number) => (
                 <div
                   key={item.id}
-                  className="flex items-center gap-4 rounded-lg border border-border bg-background p-4 hover:bg-muted/10 transition-colors"
+                  className="flex items-center gap-4 rounded-lg border border-border bg-background p-4 hover:bg-muted/10 transition-colors group"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/50">
                     <FileText className="h-5 w-5 text-sienna" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-foreground">{item.filename || 'Unnamed Resume'}</p>
+                    <p className="font-medium text-foreground truncate max-w-[200px] md:max-w-xs">
+                      {getDisplayName(item.filename)}
+                    </p>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <Calendar className="h-3 w-3" />
                       <span>{new Date(item.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
-                  {index === 0 && (
-                    <span className="rounded-full bg-sienna/10 text-sienna border border-sienna/20 px-2 py-0.5 text-xs font-medium">
-                      Current
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {index === 0 && (
+                      <span className="rounded-full bg-sienna/10 text-sienna border border-sienna/20 px-2 py-0.5 text-xs font-medium">
+                        Current
+                      </span>
+                    )}
+                    {item.filename?.startsWith('http') && (
+                      <Button asChild variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-sienna">
+                        <a href={item.filename} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

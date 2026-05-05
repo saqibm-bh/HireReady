@@ -1,8 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { FileText, Globe, GraduationCap, Clock, ExternalLink } from 'lucide-react';
+import { FileText, Globe, GraduationCap, Clock, ExternalLink, CheckCircle2, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
-import { ApplicationResponse } from '@/services/job-service';
+import { ApplicationResponse } from '@/lib/types/application';
 import { SkillBadge } from '@/components/skill-badge';
 
 interface ApplicationDetailDialogProps {
@@ -43,6 +43,51 @@ export function ApplicationDetailDialog({ isOpen, onClose, application }: Applic
         </DialogHeader>
 
         <div className="py-6 space-y-8">
+          {/* Match Analysis Section */}
+          <section className="p-6 rounded-2xl bg-muted/30 border border-border space-y-6">
+            <div className="flex items-center justify-between">
+              <h4 className="text-lg font-bold font-heading">Match Analysis</h4>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">Overall Score</span>
+                <span className="text-2xl font-black text-sienna">{application.match_score}%</span>
+              </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <CheckCircle2 className="h-3 w-3 text-green-500" />
+                  Skills You Have
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {application.matched_skills.length > 0 ? (
+                    application.matched_skills.map(skill => (
+                      <SkillBadge key={skill} skill={skill} variant="filled" size="sm" />
+                    ))
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">No matching skills found in resume.</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <AlertCircle className="h-3 w-3 text-sienna" />
+                  Missing Skills
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {application.missing_skills.length > 0 ? (
+                    application.missing_skills.map(skill => (
+                      <SkillBadge key={skill} skill={skill} variant="outlined" size="sm" />
+                    ))
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">None! You have all required skills.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section className="space-y-3">
             <h4 className="text-lg font-bold font-heading">Your Uploaded Resume</h4>
             <div className="p-4 rounded-xl border border-border bg-muted/30 flex items-center justify-between group hover:border-sienna/30 transition-all">
@@ -68,15 +113,6 @@ export function ApplicationDetailDialog({ isOpen, onClose, application }: Applic
             <h4 className="text-lg font-bold font-heading">Job Description</h4>
             <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-sm">
               {job.description}
-            </div>
-          </section>
-
-          <section className="space-y-3">
-            <h4 className="text-lg font-bold font-heading">Required Skills</h4>
-            <div className="flex flex-wrap gap-2">
-              {job.required_skills.map(skill => (
-                <SkillBadge key={skill} skill={skill} variant="outlined" size="md" />
-              ))}
             </div>
           </section>
         </div>

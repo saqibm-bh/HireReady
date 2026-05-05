@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dashboardService, DashboardResponse } from '@/services/dashboard-service';
+import { dashboardService } from '@/services/dashboard-service';
+import { DashboardResponse } from '@/lib/types/dashboard';
 
 export function useDashboard() {
   const [data, setData] = useState<DashboardResponse | null>(null);

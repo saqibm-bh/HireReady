@@ -4,7 +4,7 @@ from sqlalchemy import text
 import json
 from app.database.connection import get_db
 from app.services.auth import get_current_user
-from app.schema.dashboard import DashboardResponse, MissingSkillDashboard
+from app.schema.dashboard import DashboardResponse, MissingSkillDashboard, RecentApplicationDashboard
 
 router = APIRouter(
     prefix="/dashboard",
@@ -28,13 +28,43 @@ def get_seeker_dashboard(
         {"user_id": current_user["id"]}
     ).fetchone()
     
+    # 2. Fetch Recent Applications
+    applications_query = db.execute(
+        text("""
+            SELECT 
+                ja.id,
+                jp.title as job_title,
+                ja.match_score,
+                ja.status,
+                ja.created_at as applied_at
+            FROM job_applications ja
+            JOIN job_postings jp ON ja.job_id = jp.id
+            WHERE ja.seeker_id = :seeker_id
+            ORDER BY ja.created_at DESC
+            LIMIT 3
+        """),
+        {"seeker_id": current_user["id"]}
+    ).fetchall()
+    
+    recent_apps = [
+        RecentApplicationDashboard(
+            id=app.id,
+            job_title=app.job_title,
+            match_score=float(app.match_score),
+            status=app.status,
+            applied_at=app.applied_at
+        ) for app in applications_query
+    ]
+
     if not latest_gap:
         # Fallback for new users
         return DashboardResponse(
             match_score=0,
             completed_steps=0,
             total_steps=0,
-            top_missing_skills=[]
+            top_missing_skills=[],
+            recent_applications_count=len(recent_apps),
+            recent_applications=recent_apps
         )
     
     # Parse missing skills
@@ -47,7 +77,7 @@ def get_seeker_dashboard(
         for s in missing_skills_data[:5] # Top 5
     ] if missing_skills_data else []
     
-    # 2. Fetch Roadmap Progress
+    # 3. Fetch Roadmap Progress
     roadmap = db.execute(
         text("SELECT steps FROM learning_roadmaps WHERE gap_analysis_id = :gap_id"),
         {"gap_id": latest_gap[0]}
@@ -68,5 +98,6 @@ def get_seeker_dashboard(
         completed_steps=completed_steps,
         total_steps=total_steps,
         top_missing_skills=top_missing,
-        recent_applications_count=0 # Static for now
+        recent_applications_count=len(recent_apps),
+        recent_applications=recent_apps
     )

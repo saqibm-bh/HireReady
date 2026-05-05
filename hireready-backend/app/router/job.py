@@ -4,13 +4,15 @@ from sqlalchemy import text
 from typing import List
 from uuid import UUID
 from datetime import datetime
+import json
 
 from app.database.connection import get_db
 from app.services.auth import get_current_user
 from app.schema.job import JobCreate, JobResponse, ApplicationResponse
 from app.services.job_service import create_new_job_posting, get_recruiter_jobs, get_all_job_postings
-from app.services.gap_analysis_service import get_all_roles, get_all_skills
+from app.services.gap_analysis_service import get_all_roles, get_all_skills, calculate_job_match
 from app.database.supabase import supabase
+from app.services.parsing_service import parse_resume
 
 router = APIRouter(
     prefix="/jobs",
@@ -109,13 +111,16 @@ def get_applied_jobs(
     current_user: any = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Returns jobs the current user has applied for."""
+    """Returns jobs the current user has applied for with match analysis."""
     query = text("""
         SELECT 
             ja.id as application_id,
             ja.resume_url,
             ja.status,
             ja.created_at as applied_at,
+            ja.match_score,
+            ja.matched_skills,
+            ja.missing_skills,
             jp.id as job_id,
             jp.recruiter_id,
             jp.title,
@@ -139,6 +144,9 @@ def get_applied_jobs(
             resume_url=r.resume_url,
             status=r.status,
             applied_at=r.applied_at,
+            match_score=float(r.match_score),
+            matched_skills=r.matched_skills if r.matched_skills else [],
+            missing_skills=r.missing_skills if r.missing_skills else [],
             job=JobResponse(
                 id=r.job_id,
                 recruiter_id=r.recruiter_id,
@@ -167,36 +175,66 @@ async def apply_to_job(
         )
 
     try:
-        # 1. Upload to Supabase Storage
+        # 1. Fetch job requirements first
+        job_res = db.execute(
+            text("SELECT required_skills FROM job_postings WHERE id = :job_id"),
+            {"job_id": job_id}
+        ).fetchone()
+        
+        if not job_res:
+            raise HTTPException(status_code=404, detail="Job not found")
+        
+        required_skills = job_res.required_skills
+
+        # 2. Parse resume and extract skills
         file_content = await file.read()
+        _, parsed_resume = await parse_resume(file_content)
+        resume_skills = parsed_resume.technical_skills
+
+        # 3. Calculate match metrics
+        match_score, matched_skills, missing_skills = calculate_job_match(resume_skills, required_skills)
+
+        # 4. Upload to Supabase Storage
         file_extension = file.filename.split(".")[-1]
         unique_filename = f"{job_id}_{current_user['id']}_{int(datetime.now().timestamp())}.{file_extension}"
         
-        # Upload using the dedicated client
         supabase.storage.from_("resumes").upload(
             path=unique_filename,
             file=file_content,
             file_options={"content-type": "application/pdf"}
         )
         
-        # Get public URL
         resume_url = supabase.storage.from_("resumes").get_public_url(unique_filename)
 
-        # 2. Save to database using existing SQLAlchemy session
+        # 5. Save application with analysis results
         db.execute(
             text("""
-                INSERT INTO job_applications (job_id, seeker_id, resume_url)
-                VALUES (:job_id, :seeker_id, :resume_url)
+                INSERT INTO job_applications (
+                    job_id, seeker_id, resume_url, 
+                    match_score, matched_skills, missing_skills
+                )
+                VALUES (
+                    :job_id, :seeker_id, :resume_url, 
+                    :match_score, :matched_skills, :missing_skills
+                )
             """),
             {
                 "job_id": job_id,
                 "seeker_id": current_user["id"],
-                "resume_url": resume_url
+                "resume_url": resume_url,
+                "match_score": match_score,
+                "matched_skills": json.dumps(matched_skills),
+                "missing_skills": json.dumps(missing_skills)
             }
         )
         db.commit()
 
-        return {"message": "Application submitted successfully", "resume_url": resume_url}
+        return {
+            "message": "Application submitted successfully", 
+            "match_score": match_score,
+            "matched_skills": matched_skills,
+            "missing_skills": missing_skills
+        }
     
     except Exception as e:
         db.rollback()

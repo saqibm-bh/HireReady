@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { jobService, JobMetadata, JobResponse, JobCreateRequest, ApplicationResponse } from '@/services/job-service';
+import { jobService } from '@/services/job-service';
+import { JobMetadata, JobResponse, JobCreateRequest } from '@/lib/types/job';
+import { ApplicationResponse } from '@/lib/types/application';
 import { toast } from 'sonner';
 
 export function useJobs() {

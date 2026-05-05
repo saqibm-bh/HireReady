@@ -30,4 +30,7 @@ class ApplicationResponse(BaseModel):
     resume_url: str
     status: str
     applied_at: datetime
+    match_score: float
+    matched_skills: List[str]
+    missing_skills: List[str]
     job: JobResponse

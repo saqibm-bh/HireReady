@@ -103,7 +103,26 @@ def perform_gap_analysis(user_skills: List[str], target_role: str) -> Tuple[int,
             current_sum = sum(s.importance for s in skills_missing)
             remainder = 100 - current_sum
             skills_missing[0].importance += remainder
-
+    
     overall_match = int((user_weight_score / total_top_20_weight) * 100)
     skills_missing.sort(key=lambda s: s.importance, reverse=True)
     return overall_match, skills_you_have, skills_missing
+
+def calculate_job_match(resume_skills: List[str], required_skills: List[str]) -> Tuple[float, List[str], List[str]]:
+    """Helper to calculate match score and identify matched/missing skills for a specific job."""
+    if not required_skills:
+        return 100.0, [], []
+    
+    normalized_resume = {s.lower().strip() for s in resume_skills}
+    
+    matched = []
+    missing = []
+    
+    for skill in required_skills:
+        if skill.lower().strip() in normalized_resume:
+            matched.append(skill)
+        else:
+            missing.append(skill)
+    
+    score = (len(matched) / len(required_skills)) * 100
+    return round(score, 1), matched, missing
