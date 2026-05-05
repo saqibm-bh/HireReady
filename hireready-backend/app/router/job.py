@@ -7,7 +7,7 @@ from datetime import datetime
 
 from app.database.connection import get_db
 from app.services.auth import get_current_user
-from app.schema.job import JobCreate, JobResponse
+from app.schema.job import JobCreate, JobResponse, ApplicationResponse
 from app.services.job_service import create_new_job_posting, get_recruiter_jobs, get_all_job_postings
 from app.services.gap_analysis_service import get_all_roles, get_all_skills
 from app.database.supabase import supabase
@@ -101,6 +101,55 @@ def get_my_job_postings(
             work_location=r[6],
             employment_type=r[7],
             created_at=r[8]
+        ) for r in results
+    ]
+
+@router.get("/applied", response_model=List[ApplicationResponse])
+def get_applied_jobs(
+    current_user: any = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Returns jobs the current user has applied for."""
+    query = text("""
+        SELECT 
+            ja.id as application_id,
+            ja.resume_url,
+            ja.status,
+            ja.created_at as applied_at,
+            jp.id as job_id,
+            jp.recruiter_id,
+            jp.title,
+            jp.description,
+            jp.required_skills,
+            jp.experience_level,
+            jp.work_location,
+            jp.employment_type,
+            jp.created_at as job_created_at
+        FROM job_applications ja
+        JOIN job_postings jp ON ja.job_id = jp.id
+        WHERE ja.seeker_id = :seeker_id
+        ORDER BY ja.created_at DESC
+    """)
+    
+    results = db.execute(query, {"seeker_id": current_user["id"]}).fetchall()
+    
+    return [
+        ApplicationResponse(
+            id=r.application_id,
+            resume_url=r.resume_url,
+            status=r.status,
+            applied_at=r.applied_at,
+            job=JobResponse(
+                id=r.job_id,
+                recruiter_id=r.recruiter_id,
+                title=r.title,
+                description=r.description,
+                required_skills=r.required_skills,
+                experience_level=r.experience_level,
+                work_location=r.work_location,
+                employment_type=r.employment_type,
+                created_at=r.job_created_at
+            )
         ) for r in results
     ]
 

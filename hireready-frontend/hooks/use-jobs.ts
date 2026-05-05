@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { jobService, JobMetadata, JobResponse, JobCreateRequest } from '@/services/job-service';
+import { jobService, JobMetadata, JobResponse, JobCreateRequest, ApplicationResponse } from '@/services/job-service';
 import { toast } from 'sonner';
 
 export function useJobs() {
   const [metadata, setMetadata] = useState<JobMetadata | null>(null);
   const [postings, setPostings] = useState<JobResponse[]>([]);
   const [allJobs, setAllJobs] = useState<JobResponse[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<ApplicationResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
@@ -38,6 +39,18 @@ export function useJobs() {
       setAllJobs(data);
     } catch (err) {
       console.error('Failed to fetch all jobs:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const fetchAppliedJobs = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await jobService.getAppliedJobs();
+      setAppliedJobs(data);
+    } catch (err) {
+      console.error('Failed to fetch applied jobs:', err);
     } finally {
       setIsLoading(false);
     }
@@ -87,11 +100,13 @@ export function useJobs() {
     metadata,
     postings,
     allJobs,
+    appliedJobs,
     isLoading,
     isCreating,
     isApplying,
     fetchMyPostings,
     fetchAllJobs,
+    fetchAppliedJobs,
     createJob,
     applyToJob
   };

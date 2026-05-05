@@ -26,6 +26,14 @@ export interface JobResponse {
   created_at: string;
 }
 
+export interface ApplicationResponse {
+  id: string;
+  resume_url: string;
+  status: string;
+  applied_at: string;
+  job: JobResponse;
+}
+
 export const jobService = {
   getMetadata: async (): Promise<JobMetadata> => {
     const response = await axiosInstance.get<JobMetadata>('/jobs/meta');
@@ -44,6 +52,11 @@ export const jobService = {
   
   getMyPostings: async (): Promise<JobResponse[]> => {
     const response = await axiosInstance.get<JobResponse[]>('/jobs/my-postings');
+    return response.data;
+  },
+
+  getAppliedJobs: async (): Promise<ApplicationResponse[]> => {
+    const response = await axiosInstance.get<ApplicationResponse[]>('/jobs/applied');
     return response.data;
   },
 

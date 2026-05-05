@@ -71,13 +71,13 @@ export function SeekerJobPostings() {
         filters.title.some(t => job.title.toLowerCase().includes(t.toLowerCase()));
 
       const matchesExperience = filters.experience_level.length === 0 || 
-        filters.experience_level.includes(job.experience_level);
+        filters.experience_level.some(e => e.toLowerCase() === job.experience_level.toLowerCase());
       
       const matchesLocation = filters.work_location.length === 0 || 
-        filters.work_location.includes(job.work_location);
+        filters.work_location.some(l => l.toLowerCase() === job.work_location.toLowerCase());
       
       const matchesType = filters.employment_type.length === 0 || 
-        filters.employment_type.includes(job.employment_type);
+        filters.employment_type.some(t => t.toLowerCase() === job.employment_type.toLowerCase());
 
       return matchesSearch && matchesTitle && matchesExperience && matchesLocation && matchesType;
     });
@@ -406,7 +406,7 @@ export function SeekerJobPostings() {
                 <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
                   <section className="space-y-4">
                     <h3 className="text-xl font-bold text-foreground font-heading">Role Description</h3>
-                    <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                    <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-sm">
                       {selectedJob.description}
                     </div>
                   </section>
@@ -422,7 +422,7 @@ export function SeekerJobPostings() {
 
                   <section className="space-y-4">
                     <h3 className="text-xl font-bold text-foreground font-heading">Key Requirements</h3>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground text-sm">
                       <li>Ability to work in a <span className="text-foreground font-medium capitalize">{selectedJob.work_location}</span> environment</li>
                       <li>Professional experience at a <span className="text-foreground font-medium capitalize">{selectedJob.experience_level}</span> level</li>
                     </ul>

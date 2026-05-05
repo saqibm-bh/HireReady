@@ -24,3 +24,10 @@ class JobResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ApplicationResponse(BaseModel):
+    id: UUID
+    resume_url: str
+    status: str
+    applied_at: datetime
+    job: JobResponse
