@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Mail, Calendar, ExternalLink, User, Target, TrendingUp, Info } from 'lucide-react';
 import { format } from 'date-fns';
