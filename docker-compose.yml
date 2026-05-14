@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: ./hireready-backend
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     volumes:
       - ./hireready-backend/.env:/app/.env
     ports:
@@ -14,7 +14,7 @@ services:
   frontend:
     build:
       context: ./hireready-frontend
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     ports:
       - "80:80"
     depends_on:
