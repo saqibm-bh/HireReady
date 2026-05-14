@@ -249,36 +249,6 @@ export function AuthPage() {
             </Button>
           </form>
 
-          {/* Demo Login Buttons */}
-          <div className="mt-6 border-t border-border pt-6">
-            <p className="mb-3 text-center text-sm text-muted-foreground font-medium">Quick demo access</p>
-            <div className="grid grid-cols-3 gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-border text-foreground hover:bg-muted hover:text-sienna hover:border-sienna transition-all cursor-pointer"
-                onClick={() => navLogin('demo-token', 'job-seeker')}
-              >
-                Job Seeker
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-border text-foreground hover:bg-muted hover:text-sienna hover:border-sienna transition-all cursor-pointer"
-                onClick={() => navLogin('demo-token', 'recruiter')}
-              >
-                Recruiter
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-border text-foreground hover:bg-muted hover:text-sienna hover:border-sienna transition-all cursor-pointer"
-                onClick={() => navLogin('demo-token', 'admin')}
-              >
-                Admin
-              </Button>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>
