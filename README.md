@@ -7,7 +7,7 @@ HireReady is a comprehensive AI-powered career development and recruitment platf
 ### For Job Seekers
 
 1.  **AI-Powered Resume Analysis**
-    *   Automated extraction of technical skills and professional metadata from PDF resumes using PyMuPDF and Groq LLMs.
+    *   Automated extraction of technical skills and profesional metadata from PDF resumes using PyMuPDF and Groq LLMs.
     *   Secure storage of resumes in Supabase Storage buckets for persistent access.
 
 2.  **Career Gap Analysis**
